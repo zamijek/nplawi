@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nestlé Pure Life | Dashboard</title>
+    <link rel="stylesheet" href="styles3.css">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="gambar/AWI logo.png" alt="Nestlé Pure Life" />
+                </a>
+            </div>
+            <div class="header-welcome">
+                <h1>Selamat Datang Sobat Nestlé Pure Life</h1>
+            </div>
+            <div class="tombol-logout">
+                <button class="logout-button" onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="dashboard-container">
+        <!-- Sidebar Menu -->
+        <div class="dashboard-menu">
+            <a href="#" onclick="showContent('order')">Buat Pemesanan</a>
+            <a href="#" onclick="showContent('stok')">Status Pemesanan</a>
+            <a href="#" onclick="showContent('promo')">Program NPL</a>
+            <a href="#" onclick="showContent('akun')">Informasi Akun</a>
+        </div>
+
+        <!-- Content Section -->
+        <div class="dashboard-content">
+            <div id="order" class="content-section">
+                <h2>Buat Pemesanan</h2>
+                <form>
+                    <!-- Produk 1 -->
+                    <div class="dashboard-ukurannpl">
+                        <div class="dashboard-produk">
+                            <img src="gambar/npl330ml.jpg" alt="Nestle Pure Life 330ml">
+                        </div>
+                        <div class="harga-produk">
+                            <h1>Nestle Pure Life 330ml (24pcs)</h1>
+                            <p>Rp. 34.713</p>
+                            <label>Jumlah Karton :</label>
+                            <input type="number" min="0" value="0"
+                                onchange="updateCart('Nestle Pure Life 330ml', 1, 34713, this.value)">
+                        </div>
+                    </div>
+                    <!-- Produk 2 -->
+                    <div class="dashboard-ukurannpl">
+                        <div class="dashboard-produk">
+                            <img src="gambar/npl600ml.jpg" alt="Nestle Pure Life 600ml">
+                        </div>
+                        <div class="harga-produk">
+                            <h1>Nestle Pure Life 600ml (24pcs)</h1>
+                            <p>Rp. 43.593</p>
+                            <label>Jumlah Karton :</label>
+                            <input type="number" min="0" value="0"
+                                onchange="updateCart('Nestle Pure Life 600ml', 1, 43593, this.value)">
+                        </div>
+                    </div>
+                    <!-- Produk 3 -->
+                    <div class="dashboard-ukurannpl">
+                        <div class="dashboard-produk">
+                            <img src="gambar/1500ml1.jpg" alt="Nestle Pure Life 1500ml">
+                        </div>
+                        <div class="harga-produk">
+                            <h1>Nestle Pure Life 1500ml (12pcs)</h1>
+                            <p>Rp. 44.900</p>
+                            <label>Jumlah Karton :</label>
+                            <input type="number" min="0" value="0"
+                                onchange="updateCart('Nestle Pure Life 1500ml', 1, 44900, this.value)">
+                        </div>
+                    </div>
+                </form>
+                <!-- Keranjang Belanja -->
+                <div id="cart" class="cart-section">
+                    <h2>Keranjang Belanja</h2>
+                    <ul id="cart-items"></ul>
+                    <p>Total Karton: <span id="total-cartons">0</span></p>
+                    <p>Total Harga: Rp <span id="total-price">0</span></p>
+                    <button id="checkout-button" onclick="checkout()" disabled>Checkout</button>
+                </div>
+            </div>
+
+            <div id="stok" class="content-section" style="display: none;">
+                <h2>Status Pemesanan</h2>
+                <p>Pesanan Anda:</p>
+                <ul id="orderStatus">
+                    <!-- Status pemesanan akan diisi secara dinamis -->
+                </ul>
+                <button onclick="changeOrderStatus()">Perbarui Status</button>
+            </div>
+
+            <div id="promo" class="content-section" style="display: none;">
+                <h2>Program dan Promo Nestlé Pure Life</h2>
+                <p>Untuk informasi lebih lanjut, Anda bisa membaca lampiran di bawah ini :</p>
+                <ul>
+                    <li>Bonus 2 karton Nestlé Pure Life 600ml untuk setiap pembelian 40 karton.</li>
+                    <li>Dapatkkan cashback setiap target pembelian anda tercapai !.</li>
+                </ul>
+                <p>Unduh informasi lengkap di sini :</p>
+                <a href="PROMO NPL 40+2 DAN PROGRAM NPL.pdf" download>📥 Download PDF</a>
+                <p>Atau baca langsung di browser :</p>
+                <a href="PROMO NPL 40+2 DAN PROGRAM NPL.pdf" target="_blank">📖 Baca PDF</a>
+                <p>Ayo daftarkan usaha Anda pada Program Nestlé Pure Life, nikmati bonus dan dapatkan cashbacknya !</p>
+                <p>Belum daftar program ? Daftarkan usaha Anda pada Program Nestlé Pure Life di bawah ini !</p>
+                <a href="#" id="showProgramSelection" onclick="showProgramOptions()">Pilih Program Nestlé Pure Life</a>
+
+                <div id="programOptions" class="program-options">
+                    <form id="programSelectionForm">
+                        <div class="form-group">
+                            <h3>Pilih Kategori :</h3>
+                            <select name="categoryOption" id="categoryOption" required>
+                                <option value="" disabled selected>Pilih kategori</option>
+                                <option value="NaturaReguler">Natura Reguler</option>
+                                <option value="NaturaGromin">Natura Gromin</option>
+                            </select>
+                        </div><br>
+                        <div class="form-group">
+                            <h3>Pilih Program yang Diinginkan:</h3>
+                            <select name="programOption" id="programOption" required>
+                                <option value="" disabled selected>Pilih program</option>
+                                <!-- Opsi program akan dimuat di sini -->
+                            </select>
+                        </div><br>
+                        <button type="submit">Daftar Program</button>
+                    </form>
+                </div>
+                <div id="programStatus" class="program-status">
+                    <h3>Status Program</h3>
+                    <p id="statusMessage">Anda telah terdaftar pada program berikut:</p>
+                    <ul id="registeredPrograms">
+                        <!-- Daftar program yang diikuti akan ditampilkan di sini -->
+                    </ul>
+                </div>
+            </div>
+
+            <div id="akun" class="content-section">
+                <h2>Informasi Akun</h2>
+                <p>Nama: <span id="userName"></span></p>
+                <p>Tempat dan Tanggal Lahir: <span id="userBirth"></span></p>
+                <p>Email: <span id="userEmail"></span></p>
+                <p>Nomor Handphone: <span id="userNo"></span></p>
+                <p>Alamat: <span id="userAddress"></span></p>
+                <p>Nama Toko: <span id="userShopName"></span></p>
+                <p>Alamat Toko: <span id="userShopAddress"></span></p>
+                <button onclick="editAccount()">Edit Akun</button>
+            </div>
+            <div id="editAccountSection" class="content-section" style="display: none;">
+                <h2>Edit Akun</h2>
+                <form id="editAccountForm">
+                    <label for="name">Nama:</label><br>
+                    <input type="text" id="name" name="name"><br><br>
+
+                    <label for="birth">Tempat dan Tanggal Lahir:</label><br>
+                    <input type="text" id="birth" name="birth"><br><br>
+
+                    <label for="email">Email:</label><br>
+                    <input type="email" id="email" name="email"><br><br>
+
+                    <label for="phone">Nomor Handphone:</label><br>
+                    <input type="text" id="phone" name="phone"><br><br>
+
+                    <label for="address">Alamat:</label><br>
+                    <input type="text" id="address" name="address"><br><br>
+
+                    <label for="shopName">Nama Toko:</label><br>
+                    <input type="text" id="shopName" name="shopName"><br><br>
+
+                    <label for="shopAddress">Alamat Toko:</label><br>
+                    <input type="text" id="shopAddress" name="shopAddress"><br><br>
+
+                    <button type="button" onclick="saveAccount()">Simpan</button>
+                    <button type="button" onclick="cancelEdit()">Batal</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footermarks">
+        <p>&copy; 2024 Nestlé Pure Life. All rights reserved.</p>
+    </footer>
+    <script src="script/user.js"></script>
+    <script src="script/app.js"></script>
+</body>
+
+</html>

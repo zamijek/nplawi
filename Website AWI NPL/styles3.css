@@ -1,0 +1,334 @@
+/* CSS STYLE INDEX*/
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9)), url(gambar/Banner-NPL-Akasha.jpg);
+    background-repeat: no-repeat; /* Tidak mengulang gambar */
+    background-attachment: fixed; /* Gambar tetap saat di-scroll */
+    background-position: center;
+    background-size: cover;
+    color: #fff;
+  }
+  
+  /* BAGIAN NAVBAR */
+  .navbar {
+    height: 7vh;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0071b2; /* Biru khas Nestlé Pure Life */
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+.logo img {
+  width: 60px;
+  margin-right: auto;
+  margin-left: 10px;
+  }
+
+.header-welcome h1{
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.logout-button, #auth-btn {
+width: 80px;
+  padding: 10px 10px;
+  margin-left: 10px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  font-weight: bold;
+  background-color: #0056b3;
+  color: #ffffff;
+  border: 2px solid #67a7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #67a7eb;
+}
+
+.logout-button a{
+  text-decoration: none;
+  color: white;
+}
+
+/* CCS ISI DASHBOARD ADMIN DAN USER*/
+
+.content-section {
+    padding: 20px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    display: none;
+}
+
+.content-section.active {
+    display: block;
+}
+
+.content-section label {
+    margin: 5px;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: auto;
+    
+}
+
+.dashboard-menu {
+    width: 220px;
+    color: #fff;
+    padding: 10px 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+.dashboard-menu a {
+    color: #fff;
+    background-color: #0071b2;;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 10px 15px;
+    margin: 5px 0;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+.dashboard-menu a:hover {
+    background-color: #0056b3;
+}
+
+.dashboard-content {
+   width: 100%;
+    padding: 20px;  
+}
+
+.dashboard-ukurannpl {
+    display: flex;
+}
+
+.dashboard-ukurannpl img {
+    margin-top: 10px;
+    width: 200px;
+}
+
+.dashboard-content h2, p {
+    color: rgb(255, 255, 255);
+}
+
+.harga-produk {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+.harga-produk h1{
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: -15px;
+}
+
+.harga-produk p{
+    font-size: 22px;
+}
+
+.harga-produk input{
+    padding: 10px 0;
+    padding-left: 10px;
+    padding-right: 5px;
+    margin-left: 5px;
+    width: 35px;
+    color: #fff;
+    background-color: #0071b2;;
+    border-radius: 6px;
+    border: 2px solid #67a7eb;
+}
+
+button{
+    text-decoration: none;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+    background-color: #0056b3;;
+    padding: 5px 5px;
+    border-radius: 8px;
+    border: 2px solid #67a7eb;
+    cursor: pointer;
+    max-width: 120px;
+}
+
+button:hover {
+    color: #ffffff;
+    background-color: #67a7eb;
+ }
+
+#promo a{
+    text-decoration: none;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+    background-color: #0056b3;;
+    padding: 8px 8px;
+    border-radius: 8px;
+    border: 2px solid #67a7eb;
+    cursor: pointer;
+}
+
+#promo a:hover {
+    color: #ffffff;
+    background-color: #67a7eb;
+  }
+
+.program-options {
+    display: none;
+    margin-top: 20px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.form-group h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+#akun span {
+    font-weight: bold;
+}
+
+#changePasswordSection {
+ margin: -20px 30px;
+ margin-bottom: 40px;
+ border: none;
+}
+
+#changePasswordSection input{
+    margin-left: 5px;
+    margin-top: 5px;
+    width: 220px;
+}
+
+/* Footer */
+footer {
+    height: 5vh;
+    background-color: #0071b2;
+    width: 100%;
+}
+.footermarks p {
+    margin-top: 10px;
+    display: flex;
+    color: white;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+/* CSS DASHBOARD ADMIN */
+
+
+.search-container {
+    margin: 10px;
+}
+
+.search-container input, select{
+    padding: 2px 2px;
+    margin-right: 5px;
+}
+
+.search-container button {
+    padding: 5px;
+}
+
+.orders-table {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 2px solid #f8f8f8;
+    border-radius: 6px;
+    text-align: center;
+    width: 700px;
+}
+
+.history-table {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 2px solid #f8f8f8;
+    border-radius: 6px;
+    text-align: center;
+    width: 700px;
+}
+
+.stock-report-table {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 2px solid #f8f8f8;
+    border-radius: 6px;
+    text-align: center;
+    width: 700px;
+}
+
+.promo-setup-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.promo-setup-container label, input, select, button{
+    width: 155px;
+    margin-left: 10px;
+}
+
+.promo-setup-container button{
+    margin-top: 10px;
+    margin-left: 20px;
+    width: 140px;
+    font-size: 12px;
+    justify-content: center;
+    align-items: center;
+}
+
+.promo-monitor-table {   margin-left: 10px;
+    padding: 5px 10px;
+    border: 2px solid #f8f8f8;
+    border-radius: 6px;
+    text-align: center;
+    width: 700px;
+}
+
+.promo-evaluation-table {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 2px solid #f8f8f8;
+    border-radius: 6px;
+    text-align: center;
+    width: 700px;
+}
+
+.component table{
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 2px solid #f8f8f8;
+    border-radius: 6px;
+    text-align: center;
+    width: 700px;
+}
+
+.component button {
+    font-size: 12px;
+    width: 200px;
+}
+
+.price-setting {
+    margin: 10px;
+}

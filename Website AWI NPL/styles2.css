@@ -1,0 +1,1170 @@
+/* CSS STYLE TENTANG KAMI */
+/* Hero Section */
+.hero-section {
+    text-align: center;
+    padding: 30px;
+    color: #fff;
+}
+
+.hero-section h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.hero-section p {
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 18px;
+    line-height: 1.8;
+}
+
+/* Tech Section */
+.tech-section {
+    padding: 40px 20px;
+    background-image: url(gambar/papannpl.jpg);
+    background-size: cover;
+    background-position: 0 -350px;
+    margin: 20px auto;
+    max-width: 1000px;
+}
+
+.tech-section h2 {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 30px;
+    font-size: 36px;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.tech-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.tech-item {
+    background-color:  #67a7eb;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.tech-item:hover {
+    transform: translateY(-5px);
+}
+
+.tech-item h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Contribution Section */
+.contribution-section {
+    padding: 40px 20px;
+    background-image: url(gambar/kardusnpl.jpg);
+    background-size: cover;
+    background-position: 0 -440px;
+    margin: 20px auto;
+    max-width: 1000px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.contribution-section h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.contribution-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.contribution-section ul li {
+    margin-bottom: 20px;
+    background-color:  #67a7eb;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.contribution-section ul li h3 {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.contribution-section ul li p {
+    text-align: left;
+    color: white;
+    font-size: 16px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.hastag {
+    text-align: center;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Utility Classes */
+.max-width {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* CSS RESPONSIVE TENTANK KAMI */
+/* RESPONSIVE CSS */
+
+/* Desktop (1024px ke atas) */
+@media (min-width: 1024px) {
+    .hero-section h1 {
+      font-size: 36px;
+    }
+  
+    .hero-section p {
+      font-size: 20px;
+      max-width: 900px;
+    }
+  
+    .tech-section h2, .contribution-section h2 {
+      font-size: 40px;
+    }
+  
+    .tech-item h3 {
+      font-size: 20px;
+    }
+  
+    .contribution-section ul li h3 {
+      font-size: 20px;
+    }
+  
+    .hastag {
+      font-size: 24px;
+    }
+  }
+  
+  /* Tablet (768px - 1023px) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .hero-section h1 {
+      font-size: 32px;
+    }
+  
+    .hero-section p {
+      font-size: 18px;
+    }
+  
+    .tech-section h2, .contribution-section h2 {
+      font-size: 36px;
+    }
+  
+    .tech-item {
+      padding: 15px;
+    }
+  
+    .tech-item h3 {
+      font-size: 18px;
+    }
+  
+    .contribution-section ul li h3 {
+      font-size: 18px;
+    }
+  
+    .hastag {
+      font-size: 20px;
+    }
+  }
+  
+  /* Ponsel Besar (481px - 767px) */
+  @media (min-width: 481px) and (max-width: 767px) {
+    .hero-section h1 {
+      font-size: 28px;
+    }
+  
+    .hero-section p {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+  
+    .tech-section {
+      padding: 20px;
+      margin: 20px 20px;
+    }
+  
+    .tech-section h2, .contribution-section h2 {
+      font-size: 28px;
+    }
+  
+    .tech-item {
+      padding: 15px;
+    }
+  
+    .tech-item h3 {
+      font-size: 16px;
+    }
+  
+    .contribution-section {
+        background-position: -100px 0;
+        margin: 20px 20px;
+    }
+
+    .contribution-section ul li h3 {
+      font-size: 16px;
+    }
+  
+    .hastag {
+      font-size: 18px;
+    }
+  }
+  
+  /* Ponsel Kecil (320px - 480px) */
+  @media (max-width: 480px) {
+    .hero-section {
+      padding: 20px 10px;
+    }
+  
+    .hero-section h1 {
+      font-size: 24px;
+    }
+  
+    .hero-section p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  
+    .tech-section {
+    margin: 20px 20px;
+      padding: 20px;
+      background-position: 0 -250px;
+    }
+  
+    .tech-section h2, .contribution-section h2 {
+      font-size: 24px;
+    }
+  
+    .tech-details {
+      grid-template-columns: 1fr; /* Satu kolom untuk ponsel kecil */
+      gap: 10px;
+    }
+  
+    .tech-item {
+      padding: 10px;
+    }
+  
+    .tech-item h3 {
+      font-size: 14px;
+    }
+  
+    .contribution-section {
+        margin: 20px 20px;
+      padding: 20px;
+      background-position: 0 -300px;
+    }
+  
+    .contribution-section ul li {
+      margin-bottom: 15px;
+      padding: 10px;
+    }
+  
+    .contribution-section ul li h3 {
+      font-size: 14px;
+    }
+  
+    .contribution-section ul li p {
+      font-size: 14px;
+    }
+  
+    .hastag {
+      font-size: 16px;
+    }
+  }
+  
+
+/* CSS STYLE KONTAK*/
+.kontakbody {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 20px;
+}
+
+.kontakbody img{
+    width: 90%;
+}
+
+.kontaktertera {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
+}
+
+.kontakkantor img {
+    border: 2px solid #0056b3;
+    border-radius: 8px;
+    height: 400px;
+    margin-left: 25px;
+}
+.kontakkantor, .lokasicabang {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+}
+
+.kontakkantor h1, .lokasicabang h1 {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #000000;
+    text-align: center;
+}
+
+.lokasicabang h1 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 25px;
+  margin-top: 20px;
+  color: #000000;
+  text-align: center;
+}
+
+.kontakkantor p {
+    text-decoration: none;
+    font-size: 0.9em;
+    color: #000000;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.lokasicabang p {
+  font-size: 0.9em;
+  color: #000000;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  margin-left: 50px;
+  margin-right: 30px;
+  text-align: left;
+}
+
+.kontakkantor p a, .lokasicabang p a{
+  text-decoration: none;
+  color: #000000;
+}
+
+
+
+/* CSS RESPONSIVE KONTAK */
+/* RESPONSIVE CSS */
+
+/* Desktop (1024px ke atas) */
+@media (min-width: 1024px) {
+    .kontakbody {
+      padding: 40px;
+    }
+  
+    .kontakkantor, .lokasicabang {
+      max-width: 500px;
+      padding: 30px;
+    }
+  
+    .kontakkantor h1, .lokasicabang h1 {
+      font-size: 2em;
+    }
+  
+    .kontakkantor p, .lokasicabang p {
+      font-size: 1em;
+    }
+
+    .kontakkantor img {
+      height: 450px;
+      margin-left: 25px;
+    }
+  }
+  
+  /* Tablet (768px - 1023px) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .kontakbody {
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .kontakkantor, .lokasicabang {
+      max-width: 450px;
+      padding: 25px;
+    }
+  
+    .kontakkantor h1, .lokasicabang h1 {
+      font-size: 1.8em;
+    }
+  
+    .kontakkantor img {
+      height: 400px;
+      margin-left: 25px;
+    }
+  
+    input {
+      font-size: 0.9em;
+    }
+  
+    button {
+      font-size: 0.9em;
+    }
+  }
+  
+  /* Ponsel Besar (481px - 767px) */
+  @media (min-width: 481px) and (max-width: 767px) {
+    .kontakbody {
+      flex-direction: column;
+      gap: 15px;
+    }
+  
+    .kontakkantor, .lokasicabang {
+      max-width: 90%;
+      padding: 20px;
+    }
+  
+    .kontakkantor h1, .lokasicabang h1 {
+      font-size: 1.5em;
+    }
+  
+    .kontakkantor img {
+      height: 300px;
+      margin-left: 48px;
+    }
+  
+    input {
+      font-size: 0.85em;
+    }
+  
+    button {
+      font-size: 0.85em;
+    }
+  }
+  
+  /* Ponsel Kecil (320px - 480px) */
+  @media (max-width: 480px) {
+    .kontakbody {
+      flex-direction: column;
+      padding: 10px;
+    }
+  
+    .kontakkantor, .lokasicabang {
+      max-width: 100%;
+      padding: 15px;
+    }
+  
+    .kontakkantor h1, .lokasicabang h1 {
+      font-size: 1.2em;
+    }
+  
+    .kontakkantor p, .lokasicabang p {
+      font-size: 0.85em;
+    }
+  
+    .kontakkantor {
+        justify-content: center;
+        align-items: center;
+    }
+    .kontakkantor img {
+      height: 250px;
+      width: 86%;
+      border-radius: 6px;
+    }
+  
+    input {
+      font-size: 0.8em;
+    }
+  
+    button {
+      font-size: 0.8em;
+      padding: 8px;
+    }
+  }  
+ 
+/* CSS STYLE LOGIN */
+.login-section {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 0;
+        height: 87vh; /* Tinggi penuh viewport */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+.form-login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url(gambar/pcnpl.jpg);
+    background-size: cover;
+    background-position: 0 -250px;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 75%;
+    height: 80%;
+    margin: 30px 30px;
+}
+
+.form-login h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #000000;
+    font-weight: bold;
+    font-size: 20px; 
+}
+
+.form-login h3{
+  text-decoration: none;
+  text-align: right;
+  margin-bottom: 10px;
+  font-size: 14px; 
+}
+
+.form-login a{
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+}
+
+.form-login form {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+}
+
+.form-login form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #000000;
+}
+
+.required {
+    color: red;
+    font-weight: bold;
+    margin-left: -1px; /* Jarak kecil dari teks sebelumnya */
+}
+
+.form-login input{
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-login button {
+    background-color: #0056b3;
+    color: #ffffff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.form-login button:hover {
+    background-color: #67a7eb;
+}
+
+.form-login p {
+    text-align: center;
+    margin-top: 10px;
+    color: #000000;
+    font-weight: bold;
+}
+
+.form-login p a {
+    color: #0056b3;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-login p a:hover {
+    text-decoration: underline;
+}
+
+/*LUPA PASWORD */
+.forgot-password-section, .reset-password-section {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 87vh; /* Tinggi penuh viewport */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.form-forgot-password, .form-reset-password {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url(gambar/pcnpl.jpg);
+    background-size: cover;
+    background-position: 0 -250px;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 75%;
+    height: 80%;
+    margin: 30px 30px;
+}
+
+.form-forgot-password h2, .form-reset-password h2  {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #000000;
+    font-weight: bold;
+    font-size: 20px; 
+}
+
+.form-forgot-password, .form-reset-password a{
+  text-decoration: none;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+}
+
+.form-forgot-password form, .form-reset-password form {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+}
+
+.form-forgot-password form label, .form-reset-password form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #000000;
+}
+
+.required {
+    color: red;
+    font-weight: bold;
+    margin-left: -1px; /* Jarak kecil dari teks sebelumnya */
+}
+
+.form-forgot-password input, .form-reset-password input{
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-forgot-password button, .form-reset-password button {
+    background-color: #0056b3;
+    color: #ffffff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.form-forgot-password button:hover, .form-reset-password button:hover {
+    background-color: #67a7eb;
+}
+
+.form-forgot-password p, .form-reset-password p {
+    text-align: center;
+    margin-top: 10px;
+    color: #000000;
+    font-weight: bold;
+}
+
+.form-forgot-password p a, .form-reset-password p a {
+    color: #0056b3;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.form-forgot-password p a:hover, .form-reset-password p a:hover {
+    text-decoration: underline;
+}
+
+
+/* CSS Responsif LOGIN*/
+/* RESPONSIVE CSS */
+
+/* Desktop (1024px ke atas) */
+@media (min-width: 1024px) {
+    .form-login {
+      width: 50%;
+      height: auto;
+      padding: 40px 50px;
+    }
+  
+    .form-login h2 {
+      font-size: 24px;
+    }
+  
+    .form-login form {
+      width: 400px;
+    }
+  
+    .form-login button {
+      font-size: 18px;
+    }
+  }
+  
+  /* Tablet (768px - 1023px) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .form-login {
+      width: 70%;
+      padding: 30px 40px;
+    }
+  
+    .form-login h2 {
+      font-size: 22px;
+    }
+  
+    .form-login form {
+      width: 300px;
+    }
+  
+    .form-login button {
+      font-size: 16px;
+    }
+  }
+  
+  /* Ponsel Besar (481px - 767px) */
+  @media (min-width: 481px) and (max-width: 767px) {
+    .form-login {
+      width: 90%;
+      padding: 20px 30px;
+    }
+  
+    .form-login h2 {
+      font-size: 20px;
+    }
+  
+    .form-login form {
+      width: 100%;
+    }
+  
+    .form-login input {
+      font-size: 14px;
+    }
+  
+    .form-login button {
+      font-size: 14px;
+      padding: 8px;
+    }
+  }
+  
+  /* Ponsel Kecil (320px - 480px) */
+  @media (max-width: 480px) {
+    .form-login {
+      width: 100%;
+      padding: 15px 20px;
+      margin: 10px;
+    }
+  
+    .form-login h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+  
+    .form-login form {
+      width: 100%;
+    }
+  
+    .form-login input {
+      font-size: 12px;
+      padding: 8px;
+    }
+  
+    .form-login button {
+      font-size: 14px;
+      padding: 8px;
+    }
+  
+    .form-login p {
+      font-size: 12px;
+    }
+  }
+  
+  .hidden {
+    display: none;
+}
+
+  /* CSS Responsif FORGOT*/
+/* RESPONSIVE CSS */
+
+/* Desktop (1024px ke atas) */
+@media (min-width: 1024px) {
+  .forgot-password-section, .forgot-reset-section {
+  margin: 20px;
+  }  
+  
+  .form-forgot-password, .form-reset-password {
+      width: 50%;
+      height: auto;
+      padding: 40px 50px;
+      margin: 20px;
+    }
+  
+    .form-forgot-password h2, .form-reset-password h2 {
+      font-size: 24px;
+    }
+  
+    .form-forgot-password form, .form-reset-password form {
+      width: 400px;
+    }
+  
+    .form-forgot-password button, .form-reset-password button {
+      font-size: 18px;
+    }
+  }
+  
+  /* Tablet (768px - 1023px) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .forgot-password-section, .forgot-reset-section {
+  margin: 20px;
+  }
+    
+    .form-forgot-password, .form-reset-password {
+      width: 70%;
+      padding: 30px 40px;
+      margin: 20px;
+    }
+  
+    .form-forgot-password h2, .form-reset-password h2 {
+      font-size: 22px;
+    }
+  
+    .form-forgot-password form, .form-reset-password form {
+      width: 300px;
+    }
+  
+    .form-forgot-password button, .form-reset-password button {
+      font-size: 16px;
+    }
+  }
+  
+  /* Ponsel Besar (481px - 767px) */
+  @media (min-width: 481px) and (max-width: 767px) {
+    .forgot-password-section, .forgot-reset-section {
+      width: 100%;
+  margin: 20px;
+  }
+    
+    .form-forgot-password, .form-reset-password{
+      width: 90%;
+      padding: 20px 30px;
+      margin: 20px;
+    }
+  
+    .form-forgot-password h2, .form-reset-password h2 {
+      font-size: 20px;
+    }
+  
+    .form-forgot-password form, .form-reset-password form {
+      width: 100%;
+    }
+  
+    .form-forgot-password input, .form-reset-password input {
+      font-size: 14px;
+    }
+  
+    .form-forgot-password button, .form-reset-password button{
+      font-size: 14px;
+      padding: 8px;
+    }
+  }
+  
+  /* Ponsel Kecil (320px - 480px) */
+  @media (max-width: 480px) {
+.forgot-password-section, .forgot-reset-section {
+  margin: 30px;
+  }
+
+    .form-forgot-password, .form-reset-password {
+      width: 80%;
+      padding: 15px 20px;
+      margin: 20px;
+    }
+  
+    .form-forgot-password h2, .form-reset-password h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+  
+    .form-forgot-password form, .form-reset-password form {
+      width: 100%;
+    }
+  
+    .form-forgot-password input, .form-reset-password input {
+      font-size: 12px;
+      padding: 8px;
+      margin: 0 40px;
+    }
+  
+   .form-forgot-password button, .form-reset-password button {
+      font-size: 14px;
+      padding: 8px;
+      margin: 10px 40px;
+    }
+  
+    .form-forgot-password p, .form-reset-password p {
+      font-size: 12px;
+    }
+  }
+  
+
+/* CSS STYLE DAFTAR */
+/* Gaya untuk Bagian Utama Pendaftaran */
+.daftar-section {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Gaya untuk Form Pendaftaran */
+.form-daftar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 75%;
+    max-width: 500px;
+    margin: 20px;
+}
+
+.form-daftar h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333333;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.form-daftar form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-daftar form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333333;
+}
+
+.form-daftar form input,
+.form-daftar form textarea,
+.form-daftar form select {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 90%;
+}
+
+.form-daftar form textarea {
+    resize: vertical;
+}
+
+.form-daftar form input[type="file"] {
+    padding: 5px;
+}
+
+.form-daftar button {
+    background-color: #0056b3;
+    color: #ffffff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.form-daftar button:hover {
+    background-color: #67a7eb;
+}
+
+.form-daftar p {
+    text-align: center;
+    margin-top: 10px;
+    color: #000000;
+}
+
+.form-daftar p a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.form-daftar p a:hover {
+    text-decoration: underline;
+}
+
+/* Responsif */
+@media screen and (max-width: 1024px) {
+    .form-daftar {
+        width: 90%;
+        max-width: 700px;
+    }
+
+    .form-daftar h2 {
+        font-size: 22px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .form-daftar {
+        padding: 15px;
+    }
+
+    .form-daftar h2 {
+        font-size: 20px;
+    }
+
+    .form-daftar form input,
+    .form-daftar form textarea,
+    .form-daftar form select {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .form-daftar button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* RESPONSIF UNTUK FORM DAFTAR */
+/* Desktop (1024px ke atas) */
+@media screen and (min-width: 1024px) {
+    .form-daftar {
+        width: 70%;
+        padding: 30px 40px;
+    }
+
+    .form-daftar h2 {
+        font-size: 26px;
+    }
+
+    .form-daftar form input,
+    .form-daftar form textarea,
+    .form-daftar form select {
+        font-size: 15px;
+        padding: 12px;
+    }
+
+    .form-daftar button {
+        font-size: 18px;
+    }
+}
+
+/* Tablet (768px - 1023px) */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .form-daftar {
+        width: 80%;
+        padding: 20px 30px;
+    }
+
+    .form-daftar h2 {
+        font-size: 24px;
+    }
+
+    .form-daftar form input,
+    .form-daftar form textarea,
+    .form-daftar form select {
+        font-size: 14px;
+    }
+
+    .form-daftar button {
+        font-size: 16px;
+        padding: 10px;
+    }
+}
+
+/* Ponsel Besar (481px - 767px) */
+@media screen and (min-width: 481px) and (max-width: 767px) {
+    .form-daftar {
+        width: 95%;
+        padding: 15px 20px;
+    }
+
+    .form-daftar h2 {
+        font-size: 20px;
+    }
+
+    .form-daftar form input,
+    .form-daftar form textarea,
+    .form-daftar form select {
+        font-size: 13px;
+        padding: 8px;
+    }
+
+    .form-daftar button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* Ponsel Kecil (320px - 480px) */
+@media screen and (max-width: 480px) {
+    .form-daftar {
+        width: 100%;
+        padding: 10px 15px;
+        margin: 10px;
+    }
+
+    .form-daftar h2 {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    .form-daftar form input,
+    .form-daftar form textarea,
+    .form-daftar form select {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .form-daftar button {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .form-daftar p {
+        font-size: 12px;
+    }
+}
+
