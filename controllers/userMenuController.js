@@ -34,9 +34,9 @@ async function getPrograms(req, res) {
 }
 
 //DAFTAR PROGRAM=============
-async function registerProgram (req, res) {
+async function registerProgram(req, res) {
     const { programId } = req.body;
-    const userId = req.user?.id;  // Pastikan Anda memiliki middleware untuk otentikasi pengguna
+    const userId = req.user?.customer_id; // Ambil `customer_id` dari middleware otentikasi
 
     if (!programId) {
         return res.status(400).json({ message: 'Program ID tidak ditemukan.' });
@@ -50,46 +50,52 @@ async function registerProgram (req, res) {
             return res.status(404).json({ message: 'Program tidak ditemukan.' });
         }
 
-        // Pastikan pengguna belum terdaftar pada program ini
-        const existingRegistration = await queryPromise(
-            'SELECT * FROM users_program WHERE customer_id = ? AND program_id = ?',
-            [userId, programId]
-        );
+        // Hapus semua pendaftaran program sebelumnya untuk pengguna
+        await queryPromise('DELETE FROM users_program WHERE customer_id = ?', [userId]);
 
-        if (existingRegistration.length > 0) {
-            return res.status(400).json({ message: 'Anda sudah terdaftar pada program ini.' });
-        }
+        // Tambahkan program baru
+        await queryPromise('INSERT INTO users_program (customer_id, program_id, created_at) VALUES (?, ?, NOW())', [
+            userId,
+            programId,
+        ]);
 
-        // Insert data pendaftaran ke tabel user_programs
-        await queryPromise('INSERT INTO users_program (customer_id, program_id) VALUES (?, ?)', [userId, programId]);
-
-        res.status(201).json({ message: 'Berhasil mendaftar program.' });
+        res.status(201).json({ message: 'Berhasil mendaftar program baru.' });
     } catch (error) {
-        console.error(error);
+        console.error('Error registering program:', error.stack);
         res.status(500).json({ message: 'Terjadi kesalahan saat mendaftarkan program.' });
     }
-};
+}
+
 
 //MENAMPILKAN PROGRAM YANG DIDAFTARKAN
-async function getUserPrograms (req, res) {
-    const userId = req.user.id; // Ambil ID pengguna dari autentikasi
+async function getRegisteredPrograms(req, res) {
+    const userId = req.params.userId;
+
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID tidak ditemukan.' });
+    }
 
     try {
-        // Ambil program yang diikuti pengguna
-        const userPrograms = await queryPromise(
-            `SELECT p.program_id, p.program_name, p.description 
-             FROM users_program up
-             JOIN program p ON up.program_id = p.program_id
-             WHERE up.customer_id = ?`,
-            [userId]
-        );
-
-        res.status(200).json(userPrograms);
+        const query = `
+            SELECT 
+                p.program_id,
+                p.category,
+                p.program_name,
+                p.target_kuartal,
+                p.description,
+                up.created_at
+            FROM program p
+            JOIN users_program up ON p.program_id = up.program_id
+            WHERE up.customer_id = ?
+        `;
+        const programs = await queryPromise(query, [userId]);
+    
+        res.json(programs);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Terjadi kesalahan saat mengambil program.' });
+        console.error('Error fetching registered programs:', error.stack);
+        res.status(500).json({ message: 'Terjadi kesalahan saat mengambil data program.' });
     }
-};
+}
 
 
 // Fungsi untuk mendapatkan data akun pengguna berdasarkan user_id
@@ -111,13 +117,13 @@ async function getAccountData(req, res) {
 
         // Menyesuaikan nama properti agar sesuai dengan yang diminta di frontend
         const user = {
-            name: results[0].full_name,
-            birth: results[0].birth_date, // Pastikan kolom sesuai dengan database
+            name: results[0].nama_lengkap,
+            birth: results[0].ttl, // Pastikan kolom sesuai dengan database
             email: results[0].email,
-            phone: results[0].phone_number,
-            address: results[0].address,
-            shopName: results[0].shop_name,
-            shopAddress: results[0].shop_address,
+            phone: results[0].no_telp,
+            address: results[0].alamat,
+            shopName: results[0].nama_toko,
+            shopAddress: results[0].alamat_toko,
         };
 
         res.json(user); // Mengirimkan data pengguna
@@ -129,24 +135,43 @@ async function getAccountData(req, res) {
 
 
 // // Fungsi untuk memperbarui data akun pengguna
-// async function updateAccountData(req, res) {
-//     const { customer_id, nama_lengkap, ttl, email, no_telp, nama_toko, alamat_toko } = req.body;
+async function updateAccountData(req, res) {
+    const userId = req.params.userId;
+    const { name, birth, email, phone, address, shopName, shopAddress } = req.body;
 
-//     const query = `
-//         UPDATE users 
-//         SET nama_lengkap = ?, ttl = ?, email = ?, no_telp = ?, nama_toko = ?, alamat_toko = ?, 
-//         WHERE user_id = ?
-//     `;
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID tidak ditemukan.' });
+    }
 
-//     try {
-//         await queryPromise(query, [nama_lengkap, ttl, email, no_telp, nama_toko, alamat_toko, customer_id]);
+    const query = `
+        UPDATE users 
+        SET 
+            nama_lengkap = ?, 
+            ttl = ?, 
+            email = ?, 
+            no_telp = ?, 
+            alamat = ?, 
+            nama_toko = ?, 
+            alamat_toko = ?
+        WHERE customer_id = ?
+    `;
 
-//         res.json({ success: true });
-//     } catch (err) {
-//         console.error('Error updating the database:', err.stack);
-//         return res.status(500).json({ message: 'Database update error' });
-//     }
-// }
+    const values = [name, birth, email, phone, address, shopName, shopAddress, userId];
+
+    try {
+        const result = await queryPromise(query, values);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'User tidak ditemukan.' });
+        }
+
+        res.json({ message: 'Data akun berhasil diperbarui.' });
+    } catch (err) {
+        console.error('Error updating the database:', err.stack);
+        return res.status(500).json({ message: 'Database update error.' });
+    }
+}
 
 
-module.exports = { getPrograms, registerProgram, getUserPrograms, getAccountData };
+
+module.exports = { getPrograms, registerProgram, getRegisteredPrograms, getAccountData, updateAccountData };

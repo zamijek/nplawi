@@ -3,13 +3,26 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 const { promisify } = require('util');
-const JWT_SECRET = process.env.JWT_SECRET || '123';
+const JWT_SECRET = process.env.JWT_SECRET;
 const crypto = require('crypto');
 const { findUserByEmail, saveResetToken } = require('../models/userModel');
 require('dotenv').config();
 
 // Promisify db.query
 const query = promisify(db.query).bind(db);
+
+// Membuat promise untuk query database
+const queryPromise = (query, params) => {
+    return new Promise((resolve, reject) => {
+        db.query(query, params, (err, results) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+};
 
 // Register
 async function register(req, res) {
@@ -41,7 +54,8 @@ async function login(req, res) {
 
     try {
         // Cari user berdasarkan username/email
-        const users = await query('SELECT * FROM users WHERE email = ? OR customer_id = ?', [username, username]);
+        const users = await query('SELECT customer_id, role, password FROM users WHERE email = ? OR customer_id = ?', [username, username]);
+
 
         if (users.length === 0) {
             return res.status(401).json({ message: 'Email/Telepon tidak ditemukan.' });
@@ -56,13 +70,13 @@ async function login(req, res) {
         }
 
         const token = jwt.sign(
-            { id: user.id, username: user.username, role: user.role },  // Pastikan ID ada di payload
+            { customer_id: user.customer_id, username: user.username, role: user.role },  // Pastikan ID ada di payload
             JWT_SECRET,
             { expiresIn: '1h' }
         );
 
         // Kirim token ke klien
-        res.json({ token, userId: user.id, role: user.role });
+        res.json({ token, userId: user.customer_id, role: user.role });
     } catch (err) {
         console.error('Error during login:', err);
         res.status(500).json({ message: 'Terjadi kesalahan server.' });
@@ -144,4 +158,43 @@ async function resetPassword(req, res) {
 }
 
 
-module.exports = { register, login, logout, forgotPassword, resetPassword };
+//GANTI PASSWORD==================
+async function changePassword(req, res) {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user?.customer_id; // `req.user` berasal dari verifyToken
+
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: 'Password lama dan password baru harus disertakan.' });
+    }
+
+    try {
+        // Ambil password hash dari database
+        const query = 'SELECT password FROM users WHERE customer_id = ?';
+        const user = await queryPromise(query, [userId]);
+
+        if (user.length === 0) {
+            return res.status(404).json({ message: 'User tidak ditemukan.' });
+        }
+
+        // Validasi password lama
+        const isPasswordValid = await bcrypt.compare(currentPassword, user[0].password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Password lama salah.' });
+        }
+
+        // Hash password baru
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update password di database
+        const updateQuery = 'UPDATE users SET password = ? WHERE customer_id = ?';
+        await queryPromise(updateQuery, [hashedPassword, userId]);
+
+        res.status(200).json({ message: 'Password berhasil diubah.' });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({ message: 'Terjadi kesalahan saat mengganti password.' });
+    }
+}
+
+module.exports = { register, login, logout, forgotPassword, resetPassword, changePassword };

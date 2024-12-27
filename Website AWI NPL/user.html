@@ -12,7 +12,7 @@
     <header>
         <nav class="navbar">
             <div class="logo">
-                <a href="index.html">
+                <a href="#">
                     <img src="gambar/AWI logo.png" alt="Nestlé Pure Life" />
                 </a>
             </div>
@@ -86,6 +86,8 @@
                     <ul id="cart-items"></ul>
                     <p>Total Karton: <span id="total-cartons">0</span></p>
                     <p>Total Harga: Rp <span id="total-price">0</span></p>
+                    <p>Diskon: Rp <span id="discount">0</span></p>
+                    <p>Total Bayar: Rp <span id="total-to-pay">0</span></p>
                     <button id="checkout-button" onclick="checkout()" disabled>Checkout</button>
                 </div>
             </div>
@@ -153,6 +155,7 @@
                 <p>Nama Toko: <span id="userShopName"></span></p>
                 <p>Alamat Toko: <span id="userShopAddress"></span></p>
                 <button onclick="editAccount()">Edit Akun</button>
+                <button onclick="toggleChangePasswordForm()">Ganti Password</button>
             </div>
             <div id="editAccountSection" class="content-section" style="display: none;">
                 <h2>Edit Akun</h2>
@@ -170,16 +173,31 @@
                     <input type="text" id="phone" name="phone"><br><br>
 
                     <label for="address">Alamat:</label><br>
-                    <input type="text" id="address" name="address"><br><br>
+                    <textarea type="text" id="address" name="address"></textarea><br><br>
 
                     <label for="shopName">Nama Toko:</label><br>
                     <input type="text" id="shopName" name="shopName"><br><br>
 
                     <label for="shopAddress">Alamat Toko:</label><br>
-                    <input type="text" id="shopAddress" name="shopAddress"><br><br>
+                    <textarea type="text" id="shopAddress" name="shopAddress"></textarea><br><br>
 
                     <button type="button" onclick="saveAccount()">Simpan</button>
                     <button type="button" onclick="cancelEdit()">Batal</button>
+                </form>
+            </div>
+            <div id="changePasswordSection" class="content-section" style="display: none;">
+                <h2>Ganti Password</h2>
+                <form id="changePasswordForm">
+                    <label for="currentPassword">Password Lama:</label><br>
+                    <input type="password" id="currentPassword" name="currentPassword" required><br><br>
+            
+                    <label for="newPassword">Password Baru:</label><br>
+                    <input type="password" id="newPassword" name="newPassword" required><br><br>
+            
+                    <label for="confirmPassword">Konfirmasi Password Baru:</label><br>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
+            
+                    <button type="button" onclick="changePassword()">Ganti Password</button>
                 </form>
             </div>
         </div>

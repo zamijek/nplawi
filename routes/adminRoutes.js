@@ -1,9 +1,8 @@
 const express = require('express');
-const { verifyToken, authorizeRole } = require('../middleware/authMiddleware');
-const { adminProtected } = require('../controllers/adminController');
+const {priceProduct } = require('../controllers/adminController');
 
 const router = express.Router();
 
-router.get('/protected', verifyToken, authorizeRole('admin'), adminProtected);
+router.get('/prices', priceProduct);
 
 module.exports = router;

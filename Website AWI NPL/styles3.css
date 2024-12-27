@@ -77,6 +77,34 @@ width: 80px;
     margin: 5px;
 }
 
+#editAccountForm input{
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 170px;
+    }
+ #editAccountForm textarea {
+        padding: 10px;
+        margin-bottom: 15px;
+        margin-left: 10px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 300px;
+        height: 100px;
+    }
+
+    #changePasswordForm input {
+        padding: 5px;
+        margin-bottom: 5px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 170px;
+    }
+
 .dashboard-container {
     display: flex;
     min-height: 100vh;
@@ -194,6 +222,12 @@ button:hover {
     margin-top: 20px;
 }
 
+#registeredPrograms li {
+    margin-bottom: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+}
+
 .form-group {
     display: flex;
     align-items: center;
@@ -209,7 +243,7 @@ button:hover {
     font-weight: bold;
 }
 
-#changePasswordSection {
+/* #changePasswordSection {
  margin: -20px 30px;
  margin-bottom: 40px;
  border: none;
@@ -219,7 +253,7 @@ button:hover {
     margin-left: 5px;
     margin-top: 5px;
     width: 220px;
-}
+} */
 
 /* Footer */
 footer {

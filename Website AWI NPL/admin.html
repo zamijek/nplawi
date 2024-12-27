@@ -12,7 +12,7 @@
     <header>
         <nav class="navbar">
             <div class="logo">
-                <a href="admin-dashboard.html">
+                <a href="#">
                     <img src="gambar/AWI logo.png" alt="Nestlé Pure Life" />
                 </a>
             </div>
@@ -135,22 +135,26 @@
                 <div class="component">
                     <h3>Pengaturan Harga</h3>
                     <div class="price-setting">
-                        <label for="priceItem1">Harga Nestlé Pure Life 330ml :</label>
-                        <input id="priceItem1" type="number" placeholder="Harga per Karton">
-                        <span id="previousPriceItem1" class="previous-price">(Sebelumnya: Rp 34.713)</span>
+                        <label for="priceItem1">Harga Nestlé Pure Life 330ml:</label>
+                        <input id="priceItem1" type="number" placeholder="Harga per Karton" data-product-id="1">
+                        <span id="previousPriceItem1" class="previous-price">(Sebelumnya: Memuat harga...)</span>
                     </div>
+                    
                     <div class="price-setting">
-                        <label for="priceItem2">Harga Nestlé Pure Life 600ml :</label>
-                        <input id="priceItem2" type="number" placeholder="Harga per Karton">
-                        <span id="previousPriceItem2" class="previous-price">(Sebelumnya: Rp 43.593)</span>
+                        <label for="priceItem2">Harga Nestlé Pure Life 600ml:</label>
+                        <input id="priceItem2" type="number" placeholder="Harga per Karton" data-product-id="2">
+                        <span id="previousPriceItem2" class="previous-price">(Sebelumnya: Memuat harga...)</span>
                     </div>
+                    
                     <div class="price-setting">
-                        <label for="priceItem3">Harga Nestlé Pure Life 1500ml :</label>
-                        <input id="priceItem3" type="number" placeholder="Harga per Karton">
-                        <span id="previousPriceItem3" class="previous-price">(Sebelumnya: Rp 44.900)</span>
+                        <label for="priceItem3">Harga Nestlé Pure Life 1500ml:</label>
+                        <input id="priceItem3" type="number" placeholder="Harga per Karton" data-product-id="3">
+                        <span id="previousPriceItem3" class="previous-price">(Sebelumnya: Memuat harga...)</span>
                     </div>
                     <button id="updatePrices">Update Harga</button>
                 </div>
+                
+                
                 <!-- Update Stok -->
                 <div class="update-stock-container">
                     <h3>Update Stok</h3>
