@@ -36,100 +36,48 @@
         </div>
         <!-- Main Content Area -->
         <div class="dashboard-content">
-            <div id="orders" class="content-section">
-                <h2>Manajemen Pesanan</h2>
-                <!-- Pencarian Pesanan -->
-                <div class="search-container">
-                    <input type="text" id="search-store" placeholder="Cari berdasarkan nama toko">
-                    <input type="date" id="search-date">
-                    <select id="search-status">
-                        <option value="">Semua Status</option>
-                        <option value="processed">Diproses</option>
-                        <option value="shipped">Dikirim</option>
-                        <option value="completed">Selesai</option>
-                        <option value="cancelled">Dibatalkan</option>
-                    </select>
-                    <button onclick="filterOrders()">Cari</button>
-                </div>
 
+            <div id="orders" class="content-section">
                 <!-- Daftar Pesanan -->
                 <div class="orders-container">
-                    <table class="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Nama Toko</th>
-                                <th>Jumlah Pesanan</th>
-                                <th>Tanggal</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Contoh Baris Pesanan -->
-                            <tr>
-                                <td>Toko Sumber Rejeki</td>
-                                <td>50 karton</td>
-                                <td>2024-12-11</td>
-                                <td><span class="status processed">Diproses</span></td>
-                                <td>
-                                    <select class="status-dropdown" onchange="updateOrderStatus(this)">
-                                        <option value="processed" selected>Diproses</option>
-                                        <option value="shipped">Dikirim</option>
-                                        <option value="completed">Selesai</option>
-                                        <option value="cancelled">Dibatalkan</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Toko Jaya Makmur</td>
-                                <td>30 karton</td>
-                                <td>2024-12-10</td>
-                                <td><span class="status shipped">Dikirim</span></td>
-                                <td>
-                                    <select class="status-dropdown" onchange="updateOrderStatus(this)">
-                                        <option value="processed">Diproses</option>
-                                        <option value="shipped" selected>Dikirim</option>
-                                        <option value="completed">Selesai</option>
-                                        <option value="cancelled">Dibatalkan</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <!-- Tambahkan baris lainnya sesuai kebutuhan -->
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="orders-container">
+                        <h2>Status Pemesanan</h2>
+                        <table class="orders-table" border="1">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">
+                                        <input type="checkbox" id="select-all" /> <!-- Checkbox Pilih Semua -->
+                                    </th>
+                                    <th rowspan="2">OrderId</th>
+                                    <th rowspan="2">Nama Toko</th>
+                                    <th colspan="3">Ukuran</th>
+                                    <th rowspan="2">Jumlah Pesanan</th>
+                                    <th rowspan="2">Tanggal</th>
+                                    <th rowspan="2">Status</th>
+                                </tr>
+                                <tr>
+                                    <th>330ml</th>
+                                    <th>600ml</th>
+                                    <th>1500ml</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-list">
+                                <!-- Pesanan akan ditampilkan di sini melalui JavaScript -->
+                            </tbody>
+                        </table>
 
-                <!-- Riwayat Pesanan -->
-                <div class="history-container">
-                    <h3>Riwayat Pesanan</h3>
-                    <table class="history-table">
-                        <thead>
-                            <tr>
-                                <th>Nama Toko</th>
-                                <th>Jumlah Pesanan</th>
-                                <th>Tanggal</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Contoh Baris Riwayat Pesanan -->
-                            <tr>
-                                <td>Toko Maju Bersama</td>
-                                <td>20 karton</td>
-                                <td>2024-12-05</td>
-                                <td><span class="status completed">Selesai</span></td>
-                            </tr>
-                            <tr>
-                                <td>Toko Harapan</td>
-                                <td>15 karton</td>
-                                <td>2024-12-03</td>
-                                <td><span class="status cancelled">Dibatalkan</span></td>
-                            </tr>
-                            <!-- Tambahkan baris lainnya sesuai kebutuhan -->
-                        </tbody>
-                    </table>
+                        <!-- Tombol Aksi Massal -->
+                        <div class="bulk-actions">
+                            <button onclick="processSelectedOrders()">Proses</button>
+                            <button onclick="printSelectedInvoices()">Cetak Invoice</button>
+                            <button onclick="shipSelectedOrders()">Kirim</button>
+                            <button onclick="completeSelectedOrders()">Selesai</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- MANAJEMEN PRODUK -->
             <div id="stock" class="content-section">
                 <h2>Manajemen Produk</h2>
                 <div class="component">
@@ -139,13 +87,13 @@
                         <input id="priceItem1" type="number" placeholder="Harga per Karton" data-product-id="1">
                         <span id="previousPriceItem1" class="previous-price">(Sebelumnya: Memuat harga...)</span>
                     </div>
-                    
+
                     <div class="price-setting">
                         <label for="priceItem2">Harga Nestlé Pure Life 600ml:</label>
                         <input id="priceItem2" type="number" placeholder="Harga per Karton" data-product-id="2">
                         <span id="previousPriceItem2" class="previous-price">(Sebelumnya: Memuat harga...)</span>
                     </div>
-                    
+
                     <div class="price-setting">
                         <label for="priceItem3">Harga Nestlé Pure Life 1500ml:</label>
                         <input id="priceItem3" type="number" placeholder="Harga per Karton" data-product-id="3">
@@ -153,17 +101,29 @@
                     </div>
                     <button id="updatePrices">Update Harga</button>
                 </div>
-                
-                
+
+                <!-- Laporan Stok -->
+                <div class="stock-report-container">
+                    <h3>Laporan Stok</h3>
+                    <table class="stock-report-table" border="1">
+                        <thead>
+                            <tr>
+                                <th>Nama Produk</th>
+                                <th>Stok Terkini</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockReportBody">
+                            <!-- Baris laporan stok akan dimuat di sini melalui JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
                 <!-- Update Stok -->
                 <div class="update-stock-container">
                     <h3>Update Stok</h3>
                     <label for="stock-item">Pilih Item :</label>
                     <select id="stock-item">
-                        <option value="air-mineral-600ml">Nestlé Pure Life 330ml</option>
-                        <option value="air-mineral-600ml">Nestlé Pure Life 600ml</option>
-                        <option value="air-mineral-1500ml">Nestlé Pure Life 1500ml</option>
-                        <!-- Tambahkan opsi lain sesuai kebutuhan -->
+                        <!-- Opsi produk akan dimuat secara dinamis -->
                     </select>
 
                     <label for="stock-quantity">Jumlah :</label>
@@ -171,218 +131,184 @@
 
                     <button onclick="updateStock()">Update Stok</button>
                 </div>
-                <!-- Laporan Stok -->
-                <div class="stock-report-container">
-                    <h3>Laporan Stok</h3>
-                    <table class="stock-report-table">
+            </div>
+
+            <!-- PROGRAM NPL -->
+            <div id="promos" class="content-section">
+                <h2>Monitoring Program NPL</h2>
+                <!-- Monitoring Program -->
+                <div class="promo-monitor-container">
+                    <div class="form-group">
+                        <h3>Pilih Kategori :</h3>
+                        <select name="categoryProgram" id="categoryProgram" required>
+                            <option value="" disabled selected>Pilih kategori</option>
+                            <option value="NaturaReguler">Natura Reguler</option>
+                            <option value="NaturaGromin">Natura Gromin</option>
+                        </select>
+                    </div>
+                    <table class="promo-monitor-table" border="1">
                         <thead>
                             <tr>
-                                <th>Tanggal</th>
-                                <th>Item</th>
-                                <th>Perubahan</th>
-                                <th>Keterangan</th>
+                                <th rowspan="2">Kategori Program</th>
+                                <th rowspan="2">Nama Program</th>
+                                <th rowspan="2">Target Quartal</th>
+                                <th rowspan="2">Diskon</th>
+                                <th colspan="3">Cashback</th> <!-- Header utama untuk ukuran produk -->
+                            </tr>
+                            <tr>
+                                <th>330ml</th>
+                                <th>600ml</th>
+                                <th>1500ml</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Contoh Baris Laporan Stok -->
-                            <tr>
-                                <td>2024-12-11</td>
-                                <td>Air Mineral 600ml</td>
-                                <td>+200 karton</td>
-                                <td>Restock</td>
-                            </tr>
-                            <tr>
-                                <td>2024-12-10</td>
-                                <td>Air Mineral 600ml</td>
-                                <td>-50 karton</td>
-                                <td>Pesanan Toko Sumber Rejeki</td>
-                            </tr>
-                            <!-- Tambahkan baris lainnya sesuai kebutuhan -->
+                            <!-- Data akan diisi secara dinamis -->
                         </tbody>
                     </table>
-                </div>
 
-                <!-- Peringatan Stok -->
-                <div class="stock-alert-container">
-                    <h3>Peringatan Stok</h3>
-                    <ul>
-                        <!-- Contoh Notifikasi Stok -->
-                        <li>Stok Air Mineral 600ml hampir habis (tersisa 20 karton).</li>
-                        <li>Stok Air Mineral 1500ml mencukupi.</li>
-                        <!-- Tambahkan notifikasi lain sesuai kebutuhan -->
-                    </ul>
+                </div>
+                <!-- Pengaturan Program -->
+                <h2>Pengaturan Program</h2>
+                <div class="promo-set-container">
+                    <div class="form-group">
+                        <h3>Pilih Kategori :</h3>
+                        <select name="categoryProgram2" id="categoryProgram2" required>
+                            <option value="" disabled selected>Pilih kategori</option>
+                            <option value="NaturaReguler">Natura Reguler</option>
+                            <option value="NaturaGromin">Natura Gromin</option>
+                        </select>
+                        <div class="form-group">
+                            <h3>Pilih Program :</h3>
+                            <select name="programName" id="programName" required disabled>
+                                <option value="" disabled selected>Pilih program terlebih dahulu</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Formulir untuk mengedit program -->
+                    <div id="editProgramFormContainer" style="display:none;">
+                        <h3>Edit Program</h3>
+                        <form id="editProgramForm">
+                            <label for="targetKuartal">Target Kuartal:</label>
+                            <input type="text" id="targetKuartal" name="target_kuartal" required>
+
+                            <label for="discount">Diskon (Rp):</label>
+                            <input type="text" id="discount" name="discount" required>
+
+                            <fieldset>
+                                <legend>Cashback</legend>
+                                <label for="cashback330">330ml:</label>
+                                <input type="text" id="cashback330" name="cashback[330ml]">
+
+                                <label for="cashback600">600ml:</label>
+                                <input type="text" id="cashback600" name="cashback[600ml]">
+
+                                <label for="cashback1500">1500ml:</label>
+                                <input type="text" id="cashback1500" name="cashback[1500ml]">
+                            </fieldset>
+
+                            <button type="submit">Simpan Perubahan</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <div id="promos" class="content-section">
-                <h2>Program NPL</h2>
 
-                <!-- Pengaturan Program -->
-                <div class="promo-setup-container">
-                    <h3>Pengaturan Program</h3>
-                    <label for="promo-name">Nama Program :</label>
-                    <input type="text" id="promo-name" placeholder="Masukkan nama program">
-
-                    <label for="promo-type">Jenis Program :</label>
-                    <select id="promo-type">
-                        <option value="bonus">Bonus Karton</option>
-                        <option value="cashback">Cashback</option>
-                        <option value="discount">Diskon</option>
-                    </select>
-
-                    <label for="promo-target">Target Minimum :</label>
-                    <input type="number" id="promo-target" placeholder="Contoh: 100 karton">
-
-                    <label for="promo-start-date">Tanggal Mulai :</label>
-                    <input type="date" id="promo-start-date">
-
-                    <label for="promo-end-date">Tanggal Berakhir :</label>
-                    <input type="date" id="promo-end-date">
-
-                    <button onclick="createOrUpdatePromo()">Simpan Program</button>
+            <!-- MANAJEMEN TOKO -->
+            <div id="users" class="content-section">
+                <div class="componentToko">
+                    <h2>Daftar Toko</h2>
+                    <div class="areaToko">
+                        <label for="areaToko">Pilih Wilayah Toko: </label>
+                        <select name="areaToko" id="areaToko" required>
+                            <option value="" disabled selected>Pilih Wilayah</option>
+                            <option value="Jakarta Timur">Jakarta Timur</option>
+                            <option value="Jakarta Utara">Jakarta Utara</option>
+                            <option value="Jakarta Pusat">Jakarta Pusat</option>
+                        </select>
+                        <p>Nama Sales: <span id="salesName" class="salesInfo">Nama Sales akan muncul di sini</span></p>
+                    </div>
+                    <div>
+                        <table class="tabel-shop" border="1">
+                            <thead>
+                                <tr>
+                                    <th>Nama Toko</th>
+                                    <th>Alamat</th>
+                                    <th>No Telp</th>
+                                    <th>Jenis Toko</th>
+                                    <th>Kategori Program</th>
+                                    <th>Program</th>
+                                    <th>Target</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tokoTableBody">
+                                <!-- Data toko akan ditambahkan di sini -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
-                <!-- Monitoring Program -->
-                <div class="promo-monitor-container">
-                    <h3>Monitoring Program</h3>
-                    <table class="promo-monitor-table">
+                <div class="component">
+                    <h3>Riwayat Pembelian Toko</h3>
+                    <table id="riwayatTable">
                         <thead>
                             <tr>
-                                <th>Nama Program</th>
-                                <th>Jenis</th>
-                                <th>Toko yang Memenuhi</th>
-                                <th>Bonus Diberikan</th>
+                                <th>Tanggal</th>
+                                <th>Jumlah Pesanan</th>
+                                <th>Jumlah Harga</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Contoh Baris Monitoring Program -->
-                            <tr>
-                                <td>Bonus Akhir Tahun</td>
-                                <td>Bonus Karton</td>
-                                <td>50 Toko</td>
-                                <td>200 Karton</td>
-                                <td>Berjalan</td>
-                            </tr>
-                            <tr>
-                                <td>Cashback Lebaran</td>
-                                <td>Cashback</td>
-                                <td>30 Toko</td>
-                                <td>Rp 5.000.000</td>
-                                <td>Selesai</td>
-                            </tr>
-                            <!-- Tambahkan baris lainnya sesuai kebutuhan -->
+                            <!-- Data riwayat transaksi akan ditambahkan di sini -->
                         </tbody>
                     </table>
                 </div>
+            </div>
 
-                <!-- Evaluasi Program -->
-                <div class="promo-evaluation-container">
-                    <h3>Evaluasi Program</h3>
-                    <table class="promo-evaluation-table">
+            <!-- Laporan Penjualan -->
+            <div id="reports" class="content-section">
+                <h2>Analisis dan Laporan Penjualan Bulanan</h2>
+
+                <!-- Laporan Penjualan -->
+                <div class="report-orders">
+                    <h3>Laporan Penjualan</h3>
+                    <p>Memuat laporan...</p>
+                </div>
+
+                <!-- Toko Terbaik -->
+                <div class="repost-best-shop">
+                    <h3>Toko Terbaik</h3>
+                    <table id="report-best-table" border="1">
                         <thead>
                             <tr>
-                                <th>Nama Program</th>
-                                <th>Jenis</th>
-                                <th>Total Toko</th>
-                                <th>Total Bonus</th>
-                                <th>Keberhasilan</th>
+                                <th rowspan="2">Nama Toko</th>
+                                <th colspan="3">Ukuran</th>
+                                <th rowspan="2">Jumlah Pesanan</th>
+                                <th rowspan="2">Nama Sales</th>
+                                <th rowspan="2">Area</th>
+                            </tr>
+                            <tr>
+                                <th>330ml</th>
+                                <th>600ml</th>
+                                <th>1500ml</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Contoh Baris Evaluasi Program -->
-                            <tr>
-                                <td>Bonus Akhir Tahun</td>
-                                <td>Bonus Karton</td>
-                                <td>50 Toko</td>
-                                <td>200 Karton</td>
-                                <td>85%</td>
-                            </tr>
-                            <tr>
-                                <td>Cashback Lebaran</td>
-                                <td>Cashback</td>
-                                <td>30 Toko</td>
-                                <td>Rp 5.000.000</td>
-                                <td>70%</td>
-                            </tr>
-                            <!-- Tambahkan baris lainnya sesuai kebutuhan -->
+                            <!-- Data riwayat transaksi akan ditambahkan di sini -->
                         </tbody>
                     </table>
                 </div>
-            </div>
 
-            <div id="users" class="content-section">
-                <h2>Manajemen Pengguna (Toko)</h2>
-                <div class="component">
-                    <h3>Daftar Toko</h3>
-                    <table>
-                        <tr>
-                            <th>Nama Toko</th>
-                            <th>Alamat</th>
-                            <th>Kontak</th>
-                            <th>Jumlah Pesanan</th>
-                        </tr>
-                        <!-- Example Data -->
-                        <tr>
-                            <td>Toko ABC</td>
-                            <td>Jl. Example No. 1</td>
-                            <td>08123456789</td>
-                            <td>50</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="component">
-                    <h3>Aktivasi/Deaktivasi Akun</h3>
-                    <button>Aktifkan Akun</button>
-                    <button>Nonaktifkan Akun</button>
-                </div>
-
-                <div class="component">
-                    <h3>Riwayat Pembelian Toko</h3>
-                    <table>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Jumlah Pesanan</th>
-                            <th>Status</th>
-                        </tr>
-                        <!-- Example Data -->
-                        <tr>
-                            <td>01-12-2024</td>
-                            <td>40 Karton</td>
-                            <td>Disetujui</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <div id="reports" class="content-section">
-                <h2>Analisis dan Laporan Penjualan Bulanan</h2>
-                <div class="component">
-                    <h3>Laporan Penjualan</h3>
-                    <p>Total Penjualan : Rp 5,000,000</p>
-                    <button>Download Laporan</button>
-                </div>
-
-                <div class="component">
-                    <h3>Laporan Bonus</h3>
-                    <p>Total Bonus Diberikan : 200 Karton</p>
-                    <button>Download Laporan Bonus</button>
-                </div>
-
-                <div class="component">
-                    <h3>Toko Terbaik</h3>
-                    <ul>
-                        <li>Toko XYZ - 100 Karton</li>
-                        <li>Toko ABC - 80 Karton</li>
-                    </ul>
-                </div>
             </div>
         </div>
     </div>
     <footer class="footermarks">
         <p>&copy; 2024 Nestlé Pure Life. All rights reserved.</p>
     </footer>
+
     <script src="script/admin.js"></script>
     <script src="script/app.js"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="process.env.CLIENT_KEY"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 
 </html>

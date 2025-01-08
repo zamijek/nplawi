@@ -25,21 +25,64 @@ const queryPromise = (query, params) => {
 };
 
 // Register
+// Register
 async function register(req, res) {
-    const { nama_lengkap, ttl, alamat, no_telp, email, password, nama_toko, alamat_toko, jenis_toko } = req.body;
+    const { 
+        nama_lengkap, 
+        ttl, 
+        alamat, 
+        no_telp, 
+        email, 
+        password, 
+        nama_toko, 
+        wilayah_toko, 
+        alamat_toko, 
+        jenis_toko 
+    } = req.body;
+
+    // Validasi wilayah toko
+    const validWilayah = ['Jakarta Pusat', 'Jakarta Utara', 'Jakarta Barat', 'Jakarta Selatan', 'Jakarta Timur'];
+    if (!validWilayah.includes(wilayah_toko)) {
+        return res.status(400).json({ message: 'Wilayah toko tidak valid.' });
+    }
 
     try {
+        // Periksa apakah email atau nomor telepon sudah digunakan
         const existingUser = await query('SELECT * FROM users WHERE email = ? OR no_telp = ?', [email, no_telp]);
         if (existingUser.length > 0) {
             return res.status(400).json({ message: 'Email atau nomor telepon sudah digunakan.' });
         }
 
+        // Enkripsi password
         const hashedPassword = await bcrypt.hash(password, 10);
-        const result = await query(
-            `INSERT INTO users (nama_lengkap, ttl, alamat, no_telp, email, password, nama_toko, alamat_toko, jenis_toko) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [nama_lengkap, ttl, alamat, no_telp, email, hashedPassword, nama_toko, alamat_toko, jenis_toko]
-        );
+
+        // Cari sales berdasarkan wilayah toko
+        const salesQuery = 'SELECT sales_id FROM sales WHERE wilayah_tugas = ? LIMIT 1';
+        const salesResults = await query(salesQuery, [wilayah_toko]);
+        if (salesResults.length === 0) {
+            return res.status(404).json({ message: 'Sales untuk wilayah ini tidak ditemukan.' });
+        }
+        const salesId = salesResults[0].sales_id;
+
+        // Simpan data pengguna ke tabel users
+        const insertUserQuery = `
+            INSERT INTO users 
+            (nama_lengkap, ttl, alamat, no_telp, email, password, nama_toko, wilayah_toko, alamat_toko, jenis_toko, created_at, role, sales_id) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'user', ?)
+        `;
+        const result = await query(insertUserQuery, [
+            nama_lengkap, 
+            ttl, 
+            alamat, 
+            no_telp, 
+            email, 
+            hashedPassword, 
+            nama_toko, 
+            wilayah_toko, 
+            alamat_toko, 
+            jenis_toko, 
+            salesId
+        ]);
 
         res.status(201).json({ message: 'Pendaftaran berhasil.', userId: result.insertId });
     } catch (err) {
@@ -47,6 +90,7 @@ async function register(req, res) {
         res.status(500).json({ message: 'Gagal menyimpan data.' });
     }
 }
+
 
 // Login
 async function login(req, res) {

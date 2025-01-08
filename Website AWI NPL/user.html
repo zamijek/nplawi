@@ -12,7 +12,7 @@
     <header>
         <nav class="navbar">
             <div class="logo">
-                <a href="#">
+                <a href="user.html">
                     <img src="gambar/AWI logo.png" alt="Nestlé Pure Life" />
                 </a>
             </div>
@@ -37,68 +37,68 @@
 
         <!-- Content Section -->
         <div class="dashboard-content">
+            <div class="image-container">
+                <img id="mainImage" src="gambar/gadingintetepseger.jpg" />
+            </div>
             <div id="order" class="content-section">
                 <h2>Buat Pemesanan</h2>
                 <form>
-                    <!-- Produk 1 -->
-                    <div class="dashboard-ukurannpl">
-                        <div class="dashboard-produk">
-                            <img src="gambar/npl330ml.jpg" alt="Nestle Pure Life 330ml">
-                        </div>
-                        <div class="harga-produk">
-                            <h1>Nestle Pure Life 330ml (24pcs)</h1>
-                            <p>Rp. 34.713</p>
-                            <label>Jumlah Karton :</label>
-                            <input type="number" min="0" value="0"
-                                onchange="updateCart('Nestle Pure Life 330ml', 1, 34713, this.value)">
-                        </div>
-                    </div>
-                    <!-- Produk 2 -->
-                    <div class="dashboard-ukurannpl">
-                        <div class="dashboard-produk">
-                            <img src="gambar/npl600ml.jpg" alt="Nestle Pure Life 600ml">
-                        </div>
-                        <div class="harga-produk">
-                            <h1>Nestle Pure Life 600ml (24pcs)</h1>
-                            <p>Rp. 43.593</p>
-                            <label>Jumlah Karton :</label>
-                            <input type="number" min="0" value="0"
-                                onchange="updateCart('Nestle Pure Life 600ml', 1, 43593, this.value)">
-                        </div>
-                    </div>
-                    <!-- Produk 3 -->
-                    <div class="dashboard-ukurannpl">
-                        <div class="dashboard-produk">
-                            <img src="gambar/1500ml1.jpg" alt="Nestle Pure Life 1500ml">
-                        </div>
-                        <div class="harga-produk">
-                            <h1>Nestle Pure Life 1500ml (12pcs)</h1>
-                            <p>Rp. 44.900</p>
-                            <label>Jumlah Karton :</label>
-                            <input type="number" min="0" value="0"
-                                onchange="updateCart('Nestle Pure Life 1500ml', 1, 44900, this.value)">
-                        </div>
-                    </div>
+                    <div id="product-list"></div> <!-- Tempat produk akan ditampilkan -->
                 </form>
                 <!-- Keranjang Belanja -->
                 <div id="cart" class="cart-section">
-                    <h2>Keranjang Belanja</h2>
+                    <h3>Keranjang Belanja</h3>
                     <ul id="cart-items"></ul>
                     <p>Total Karton: <span id="total-cartons">0</span></p>
                     <p>Total Harga: Rp <span id="total-price">0</span></p>
-                    <p>Diskon: Rp <span id="discount">0</span></p>
-                    <p>Total Bayar: Rp <span id="total-to-pay">0</span></p>
-                    <button id="checkout-button" onclick="checkout()" disabled>Checkout</button>
+                    <p><span id="discount"></span></p>
+                    <label for="checkout-note">Catatan:</label>
+                    <textarea id="checkout-note" placeholder="Tulis catatan untuk pesanan Anda (opsional)"></textarea>
+                    <div class="cart-button">
+                        <button id="checkout-button" onclick="checkout()" disabled>Checkout</button>
+                        <button id="clear-cart-button" onclick="clearCart()">Clear Cart</button>
+                    </div>
                 </div>
             </div>
 
             <div id="stok" class="content-section" style="display: none;">
+                <!-- Status Pesanan -->
                 <h2>Status Pemesanan</h2>
-                <p>Pesanan Anda:</p>
-                <ul id="orderStatus">
-                    <!-- Status pemesanan akan diisi secara dinamis -->
-                </ul>
-                <button onclick="changeOrderStatus()">Perbarui Status</button>
+                <div>
+                    <h4>Detail Pembayaran</h4>
+                    <p>Order ID: <span id="order-id"></span></p>
+                    <p>Diskon: <span id="discount1"></span></p>
+                    <p>Total Harga: <span id="final-amount"></span></p>
+                    <button onclick="proceedPayment()">Lanjutkan Pembayaran</button>
+                    <button id="cancel-order-btn">Batalkan Pesanan</button>
+                </div>
+                <div class="orderStatus">
+                    <!-- Pesanan akan muncul di sini -->
+                </div>
+                <!-- Riwayat Pemesanan -->
+                <div id="riwayatPemesanan" class="riwayat-Pemesanan">
+                    <h4>Riwayat Pemesanan</h4>
+                    <table class="order-history-table" aria-label="Tabel riwayat pemesanan" border="1">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Tanggal</th>
+                                <th rowspan="2">Order ID</th>
+                                <th colspan="3">Ukuran</th>
+                                <th rowspan="2">Jumlah</th>
+                                <th rowspan="2">Harga</th>
+                                <th rowspan="2">Status</th>
+                            </tr>
+                            <tr>
+                                <th>330ml</th>
+                                <th>600ml</th>
+                                <th>1500ml</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderHistoryBody">
+                            <!-- Baris riwayat pemesanan akan dimuat secara dinamis melalui JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div id="promo" class="content-section" style="display: none;">
@@ -190,14 +190,15 @@
                 <form id="changePasswordForm">
                     <label for="currentPassword">Password Lama:</label><br>
                     <input type="password" id="currentPassword" name="currentPassword" required><br><br>
-            
+
                     <label for="newPassword">Password Baru:</label><br>
                     <input type="password" id="newPassword" name="newPassword" required><br><br>
-            
+
                     <label for="confirmPassword">Konfirmasi Password Baru:</label><br>
                     <input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
-            
+
                     <button type="button" onclick="changePassword()">Ganti Password</button>
+                    <button type="button" onclick="cancelEdit2()">Batal</button>
                 </form>
             </div>
         </div>
@@ -206,8 +207,13 @@
     <footer class="footermarks">
         <p>&copy; 2024 Nestlé Pure Life. All rights reserved.</p>
     </footer>
+
     <script src="script/user.js"></script>
     <script src="script/app.js"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="SB-Mid-client-pisRlG5AllHLecGm"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 
 </html>

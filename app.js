@@ -34,6 +34,7 @@ app.use('/api', userMenuRoutes);
 
 // Menyajikan file statis
 app.use(express.static(path.join(__dirname, 'Website AWI NPL')));
+app.use('/images', express.static('Website AWI NPL/gambar'));
 app.get('/reset-password', (req, res) => {
     res.sendFile(path.join(__dirname, 'Website AWI NPL', 'resetpassword.html'));
 });

@@ -9,6 +9,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         email: document.getElementById('email').value,
         password: document.getElementById('password').value,
         nama_toko: document.getElementById('nama-toko').value,
+        wilayah_toko: document.getElementById('wilayah-toko').value,
         alamat_toko: document.getElementById('alamat-toko').value,
         jenis_toko: document.getElementById('jenis-toko').value
     };

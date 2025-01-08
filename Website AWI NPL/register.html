@@ -35,28 +35,37 @@
             <form id="registerForm" action="#" method="POST">
                 <label for="nama-lengkap">Nama Lengkap</label>
                 <input type="text" id="nama-lengkap" name="nama_lengkap" placeholder="Contoh : Akasha Wira" required>
-            
+
                 <label for="ttl">Tempat dan Tanggal Lahir</label>
                 <input type="text" id="ttl" name="ttl" placeholder="Contoh : Jakarta, 01-01-2000" required>
-            
+
                 <label for="alamat">Alamat</label>
                 <textarea id="alamat" name="alamat" rows="3" placeholder="Masukkan Alamat Anda" required></textarea>
-            
+
                 <label for="no-telp">Nomor Telepon</label>
                 <input type="tel" id="no-telp" name="no_telp" placeholder="Contoh : 088090907474" required>
-            
+
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="Contoh : example@gmail.com" required>
-            
+
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" placeholder="Rahasiakan Password Anda" required>
-            
+
                 <label for="nama-toko">Nama Toko</label>
                 <input type="text" id="nama-toko" name="nama_toko" placeholder="Contoh : Banyumas Agen" required>
-            
+
+                <label for="wilayah-toko">Wilayah Toko (Jakarta 1)</label>
+                <select id="wilayah-toko" name="wilayah_toko" required>
+                    <option value="" disabled selected>Pilih wilayah</option>
+                    <option value="Jakarta Pusat">Jakarta Pusat</option>
+                    <option value="Jakarta Utara">Jakarta Utara</option>
+                    <option value="Jakarta Timur">Jakarta Timur</option>
+                </select>
+
                 <label for="alamat-toko">Alamat Toko</label>
-                <textarea id="alamat-toko" name="alamat_toko" rows="3" placeholder="Alamat Toko Anda" required></textarea>
-            
+                <textarea id="alamat-toko" name="alamat_toko" rows="3" placeholder="Masukkan alamat toko secara rinci"
+                    required></textarea>
+
                 <label for="jenis-toko">Jenis Toko</label>
                 <select id="jenis-toko" name="jenis_toko" required>
                     <option value="" disabled selected>Pilih jenis toko</option>
@@ -64,7 +73,7 @@
                     <option value="retail">Retail</option>
                     <option value="restoran">Restoran</option>
                 </select>
-            
+
                 <button type="submit">Daftar</button>
             </form>
             <p>Sudah memiliki akun? <a href="login.html">Login di sini</a></p>

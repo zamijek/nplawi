@@ -20,22 +20,40 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
             localStorage.setItem('token', data.token); 
             localStorage.setItem('userId', data.userId);
             localStorage.setItem('role', data.role);
-            alert('Login berhasil!');
 
-            // Redirect sesuai role
-            if (data.role === 'admin') {
-                window.location.href = 'admin.html';
-            } else {
-                window.location.href = 'user.html';
-            }
+            // SweetAlert2 untuk sukses login
+            Swal.fire({
+                icon: 'success',
+                title: 'Login Berhasil!',
+                text: 'Selamat datang, ' + username + '!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            // Redirect sesuai role setelah beberapa detik
+            setTimeout(() => {
+                if (data.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'user.html';
+                }
+            }, 1500);
         } else {
-            alert(data.message);
+            // SweetAlert2 untuk error
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Gagal',
+                text: data.message || 'Terjadi kesalahan saat login.',
+            });
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Terjadi kesalahan server.');
+
+        // SweetAlert2 untuk kesalahan server
+        Swal.fire({
+            icon: 'error',
+            title: 'Terjadi Kesalahan',
+            text: 'Silakan coba lagi nanti.',
+        });
     }
 });
-
-
-
