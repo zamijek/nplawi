@@ -224,11 +224,11 @@ width: 80px;
     margin-top: 15px;
 }
 
-#clear-cart-button, #cancel-order-btn {
+#clear-cart-button, #cancel-order-btn, #cancelSelectedOrders {
     background-color: #b30505;;
 }
 
-#clear-cart-button:hover, #cancel-order-btn:hover {
+#clear-cart-button:hover, #cancel-order-btn:hover, #cancelSelectedOrders:hover {
     background-color: #e44141;;
 }
 
@@ -237,16 +237,19 @@ width: 80px;
 }
 
 /* Table Styles */
-.order-history-table {
+.order-history-table, .orderStatusTable {
     width: 100%;
     border-collapse: collapse;
     border: 2px solid #cccccc;
     border-radius: 6px;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .order-history-table th, 
-.order-history-table td {
+.order-history-table td, 
+.orderStatusTable th, 
+.orderStatusTable td {
     text-align: center;
     padding: 10px;
     border: 1px solid #cccccc;
@@ -317,6 +320,10 @@ button:hover {
     font-weight: bold;
 }
 
+#detail-pembayaran {
+    display: none;
+}
+
 
 /* Footer */
 footer {
@@ -344,7 +351,11 @@ footer {
         width: calc(100% - 180px); /* Menyesuaikan lebar konten */
     }
 
-    .order-history-table th, .order-history-table td {
+    .orderStatusTable {
+        width: 80%;
+    }
+
+    .order-history-table th, .order-history-table td, .orderStatusTable th, .orderStatusTable td{
         font-size: 14px; /* Mengurangi ukuran font tabel */
     }
 
@@ -395,8 +406,11 @@ footer {
         padding: 20px;
     }
 
+    .orderStatusTable {
+        width: 100%;
+    }
 
-    .order-history-table th, .order-history-table td {
+    .order-history-table th, .order-history-table td, .orderStatusTable th, .orderStatusTable td {
         font-size: 12px; /* Ukuran font tabel lebih kecil */
         padding: 8px;
     }
@@ -460,7 +474,11 @@ footer {
         margin: 5px 0;
     }
 
-    .order-history-table th, .order-history-table td {
+    .orderStatusTable {
+        width: 100%;
+    }
+
+    .order-history-table th, .order-history-table td, .orderStatusTable th, .orderStatusTable td {
         font-size: 10px; /* Ukuran font tabel lebih kecil */
         padding: 5px;
     }
@@ -527,8 +545,13 @@ footer {
         padding: 10px; /* Kurangi padding konten */
     }
 
+    .orderStatusTable {
+        width: 100%;
+        margin-right: 20px;
+    }
+
     .order-history-table th,
-    .order-history-table td {
+    .order-history-table td, .orderStatusTable th, .orderStatusTable td {
         font-size: 10px; /* Ukuran font tabel lebih kecil */
         padding: 4px; /* Kurangi padding tabel */
     }
@@ -770,8 +793,16 @@ label, input, select, button{
     margin-right: 10px;
 }
 
+.searchToko input{
+    padding: 5px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 150px;
+    margin-bottom: 10px;
+}
 
-.tabel-shop, #report-best-table {
+.tabel-shop, #report-best-table, #riwayatTable {
     margin-left: 10px;
     border-collapse: collapse;
     border: 2px solid #cccccc;
@@ -781,7 +812,10 @@ label, input, select, button{
     width: 100%;
 }
 
-.tabel-shop th, .tabel-shop td, #report-best-table th, #report-best-table td {
+.tabel-shop th, .tabel-shop td, 
+#report-best-table th, #report-best-table td, 
+#riwayatTable th, #riwayatTable td,
+.orders-table th, .orders-table td{
     text-align: center;
     padding: 10px;
     border: 1px solid #cccccc;
@@ -795,3 +829,71 @@ label, input, select, button{
 .report-orders p{
     margin-left: 20px;
 }
+
+#programOption, #categoryOption {
+    padding: 5px;
+    font-size: 14px;
+    width: 170px; /* Lebar dropdown */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #090909;
+    cursor: pointer;
+}
+
+#filterBulan, #filterTahun, #filters select, #filterWilayah {
+    padding: 5px;
+    font-size: 14px;
+    width: 120px; /* Lebar dropdown */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #090909;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+#filterNamaToko {
+    padding: 5px;
+    font-size: 14px;
+    width: 150px; /* Lebar dropdown */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #090909;
+    margin-bottom: 10px;
+}
+
+#filters button, .update-stock-container button, #updatePrices, #filterButton {
+        width: 120px;
+      padding: 10px 10px;
+      margin-left: 10px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      font-weight: bold;
+      background-color: #0056b3;
+      color: #ffffff;
+      border: 2px solid #67a7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    #filterButton {
+      width: 80px;
+      padding: 7px 10px;
+      margin-left: 10px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      font-weight: bold;
+      background-color: #0056b3;
+      color: #ffffff;
+      border: 2px solid #67a7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    #filters button:hover, .update-stock-container button:hover, #updatePrices:hover, #filterButton:hover {
+      background-color: #67a7eb;
+    }

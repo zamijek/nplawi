@@ -192,108 +192,156 @@ function displayCart() {
     totalPrice.textContent = total.toLocaleString();
     discountElement.textContent = `Bonus: ${bonus} karton 600ml`; // Tampilkan bonus karton
 
-    // Aktifkan tombol checkout jika keranjang tidak kosong dan memenuhi syarat
-    document.getElementById('checkout-button').disabled = !(cartons >= 40);
+    // Tombol checkout tetap aktif, tetapi validasi dilakukan di checkout()
+    document.getElementById('checkout-button').disabled = false;
 }
 
 // Fungsi untuk menghapus keranjang
 function clearCart() {
-    // Hapus data keranjang di localStorage dan di variabel cart
-    localStorage.removeItem('cart');
+    localStorage.removeItem('cart'); // Hapus data dari localStorage
     cart = [];
-    displayCart(); // Menampilkan keranjang setelah dibersihkan
+    displayCart(); // Tampilkan ulang keranjang setelah dibersihkan
 }
 
 // Menjalankan fungsi displayCart saat halaman dimuat
 displayCart();
 
-//fungsi tombol checkout
-function checkout() {
+// Fungsi tombol checkout
+async function checkout() {
     const userId = localStorage.getItem('userId');
     const token = localStorage.getItem('token');
     const note = document.getElementById('checkout-note').value;
 
     if (!userId || !token) {
-        alert('Anda harus login terlebih dahulu.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Login Diperlukan',
+            text: 'Anda harus login terlebih dahulu.',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
-    fetch(`/api/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-    })
-        .then(response => response.json())
-        .then(user => {
-            if (!user || !user.alamat_toko) {
-                alert('Alamat pengguna tidak ditemukan. Harap perbarui profil Anda.');
-                return;
-            }
+    // Hitung jumlah total karton dalam keranjang
+    let totalCartons = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-            const shippingAddress = user.alamat_toko;
-
-            if (cart.length === 0) {
-                alert('Keranjang belanja tidak boleh kosong.');
-                return;
-            }
-
-            fetch('/api/order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    userId,
-                    cart,
-                    shippingAddress,
-                    nama_toko: user.nama_toko,
-                    no_telp: user.no_telp,
-                    wilayah_toko: user.wilayah_toko,
-                    note,
-                }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        alert(data.message);
-                    }
-
-                    if (data.orderId) {
-                        const orderId = data.orderId;
-
-                        // Simpan Order ID ke localStorage
-                        localStorage.setItem('currentOrderId', orderId);
-
-                        // Ambil detail pesanan untuk ditampilkan
-                        fetch(`/api/order/${orderId}`, {
-                            headers: { Authorization: `Bearer ${token}` },
-                        })
-                            .then(response => response.json())
-                            .then(order => {
-                                // Tampilkan detail pembayaran
-                                document.getElementById('order-id').textContent = order.order_id;
-                                document.getElementById('discount1').textContent = formatRupiah(order.discount);
-                                document.getElementById('final-amount').textContent = formatRupiah(order.final_amount);
-
-                                // Bersihkan keranjang belanja
-                                clearCart();
-
-                                alert('Pesanan berhasil dibuat. Silakan lanjutkan ke pembayaran.');
-                            })
-                            .catch(error => {
-                                console.error('Error fetching order details:', error);
-                                alert('Terjadi kesalahan saat mengambil detail pesanan.');
-                            });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error during checkout:', error);
-                    alert('Terjadi kesalahan saat melakukan checkout.');
-                });
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-            alert('Terjadi kesalahan saat mengambil data pengguna.');
+    // Jika kurang dari 40 karton, pesanan tidak bisa dilanjutkan
+    if (totalCartons < 40) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Minimal Pembelian 40 Karton',
+            text: 'Pesanan tidak dapat dilanjutkan karena kurang dari 40 karton.',
+            confirmButtonText: 'OK',
         });
+        return; // Stop proses checkout
+    }
+
+    // Jika jumlah karton mencukupi, lanjutkan checkout
+    await processCheckout(userId, token, note);
+}
+
+// Fungsi untuk memproses checkout
+async function processCheckout(userId, token, note) {
+    try {
+        const userResponse = await fetch(`/api/users/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const user = await userResponse.json();
+
+        if (!user || !user.alamat_toko) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Alamat Tidak Ditemukan',
+                text: 'Alamat pengguna tidak ditemukan. Harap perbarui profil Anda.',
+                confirmButtonText: 'OK',
+            });
+            return;
+        }
+
+        const shippingAddress = user.alamat_toko;
+
+        if (cart.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Keranjang Kosong',
+                text: 'Keranjang belanja tidak boleh kosong.',
+                confirmButtonText: 'OK',
+            });
+            return;
+        }
+
+        const orderResponse = await fetch('/api/order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                userId,
+                cart,
+                shippingAddress,
+                nama_toko: user.nama_toko,
+                no_telp: user.no_telp,
+                wilayah_toko: user.wilayah_toko,
+                note,
+            }),
+        });
+
+        const orderData = await orderResponse.json();
+
+        if (orderData.message) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Informasi',
+                text: orderData.message,
+                confirmButtonText: 'OK',
+            });
+        }
+
+        if (orderData.orderId) {
+            const orderId = orderData.orderId;
+
+            // Simpan Order ID ke localStorage
+            localStorage.setItem('currentOrderId', orderId);
+
+            const orderDetailResponse = await fetch(`/api/order/${orderId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            const orderDetail = await orderDetailResponse.json();
+
+            // Tampilkan detail pembayaran
+            document.getElementById('order-id').textContent = orderDetail.order_id;
+            document.getElementById('discount1').textContent = formatRupiah(orderDetail.discount);
+            document.getElementById('final-amount').textContent = formatRupiah(orderDetail.final_amount);
+
+            // Tampilkan elemen detail pembayaran
+            document.getElementById('detail-pembayaran').style.display = 'block';
+
+            // Bersihkan keranjang belanja
+            clearCart();
+
+            // Tampilkan pesan berhasil
+            Swal.fire({
+                icon: 'success',
+                title: 'Pesanan Berhasil',
+                text: 'Pesanan berhasil dibuat. Silakan lanjutkan ke pembayaran.',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                location.reload(); // Reload halaman setelah user menutup swal
+            });
+        }
+    } catch (error) {
+        console.error('Error during checkout:', error);
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Terjadi Kesalahan',
+            text: 'Terjadi kesalahan saat melakukan checkout. Silakan coba lagi nanti.',
+            confirmButtonText: 'OK',
+        });
+    }
 }
 
 // Fungsi Format Rupiah
@@ -301,43 +349,70 @@ function formatRupiah(amount) {
     return `Rp ${amount.toLocaleString('id-ID')}`;
 }
 
-
-//cancel orderan
+// Cancel orderan
 document.getElementById('cancel-order-btn').addEventListener('click', () => {
     const orderId = localStorage.getItem('currentOrderId');
     if (!orderId) {
-        alert('Order ID tidak ditemukan.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Order ID Tidak Ditemukan',
+            text: 'Order ID tidak ditemukan. Silakan coba lagi.',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
-    if (confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')) {
-        fetch(`/api/order/${orderId}/cancel`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message);
-
-                    // Bersihkan data pesanan dari localStorage
-                    localStorage.removeItem('currentOrderId');
-
-                    // Bersihkan elemen UI yang menampilkan detail pesanan
-                    document.getElementById('order-id').textContent = '';
-                    document.getElementById('discount1').textContent = '';
-                    document.getElementById('final-amount').textContent = '';
-                    window.location.reload();
-                    // Redirect ke halaman lain atau tampilkan pesan
-                    alert('Pesanan berhasil dibatalkan. Silakan buat pesanan baru.');
-                }
+    Swal.fire({
+        title: 'Konfirmasi Pembatalan',
+        text: 'Apakah Anda yakin ingin membatalkan pesanan ini?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, Batalkan!',
+        cancelButtonText: 'Tidak',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/api/order/${orderId}/cancel`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
             })
-            .catch(error => {
-                console.error('Error cancelling order:', error);
-                alert('Terjadi kesalahan saat membatalkan pesanan.');
-            });
-    }
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pesanan Dibatalkan',
+                            text: data.message,
+                            confirmButtonText: 'OK',
+                        }).then(() => {
+                            // Bersihkan data pesanan dari localStorage
+                            localStorage.removeItem('currentOrderId');
+
+                            // Bersihkan elemen UI yang menampilkan detail pesanan
+                            document.getElementById('order-id').textContent = '';
+                            document.getElementById('discount1').textContent = '';
+                            document.getElementById('final-amount').textContent = '';
+
+                            // Reload halaman
+                            window.location.reload();
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error cancelling order:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: 'Gagal membatalkan pesanan. Silakan coba lagi.',
+                        confirmButtonText: 'OK',
+                    });
+                });
+        }
+    });
 });
+
+
 //UPDATE QUANTITY
 function updateQuantity(productId, newQuantity) {
     cart = cart.map(item => {
@@ -362,16 +437,18 @@ document.addEventListener('DOMContentLoaded', () => {
         minimumFractionDigits: 0, // Tanpa desimal
     });
 
-    // if (!orderId) {
-    //     alert('Order ID tidak ditemukan. Silakan coba lagi.');
-    //     return;
-    // }
+    if (!orderId) {
+        // Jika orderId tidak ditemukan, sembunyikan elemen
+        document.getElementById('detail-pembayaran').style.display = 'none';
+        return;
+    }
 
     fetch(`/api/order/${orderId}`)
         .then(response => response.json())
         .then(order => {
-            if (!order) {
-                alert('Detail pesanan tidak ditemukan.');
+            if (!order || order.status_id === 6 || order.final_amount === 0) {
+                // Jika pesanan dibatalkan (status_id = 6) atau total pembayaran 0, sembunyikan elemen
+                document.getElementById('detail-pembayaran').style.display = 'none';
                 return;
             }
 
@@ -379,6 +456,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('order-id').textContent = order.order_id;
             document.getElementById('discount1').textContent = formatter.format(order.discount);
             document.getElementById('final-amount').textContent = formatter.format(order.final_amount);
+
+            // Tampilkan elemen jika semua syarat terpenuhi
+            document.getElementById('detail-pembayaran').style.display = 'block';
 
             // Perbarui currentOrderId untuk memastikan sinkronisasi
             localStorage.setItem('currentOrderId', order.order_id);
@@ -389,6 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 });
 
+
 // TAHAP PEMBAYARAN
 function proceedPayment() {
     const orderId = localStorage.getItem('currentOrderId'); // Ambil orderId dari localStorage
@@ -396,7 +477,12 @@ function proceedPayment() {
     const amount = document.getElementById('final-amount').textContent.replace(/[^\d]/g, ''); // Ambil jumlah tanpa format
 
     if (!orderId || !amount) {
-        alert('Data pesanan tidak lengkap.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Data Tidak Lengkap',
+            text: 'Data pesanan tidak lengkap. Silakan periksa kembali.',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
@@ -417,74 +503,118 @@ function proceedPayment() {
                 // Buka Midtrans Snap menggunakan token
                 window.snap.pay(data.token, {
                     onSuccess: async function (result) {
-                        alert('Pembayaran berhasil!');
-                        console.log(result);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pembayaran Berhasil!',
+                            text: 'Terima kasih atas pembayaran Anda.',
+                            confirmButtonText: 'OK',
+                        }).then(async () => {
+                            // Memperbarui status pesanan ke "Pesanan telah dibayar"
+                            try {
+                                const updateResponse = await fetch('api/payment/order', {
+                                    method: 'PUT',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        Authorization: `Bearer ${token}`, // Jika menggunakan autentikasi
+                                    },
+                                    body: JSON.stringify({
+                                        orderId,
+                                        newStatusId: 2, // ID untuk "Pesanan telah dibayar"
+                                    }),
+                                });
 
-                        // Memperbarui status pesanan ke "Pesanan telah dibayar"
-                        try {
-                            const updateResponse = await fetch('api/payment/order', {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    Authorization: `Bearer ${token}`, // Jika menggunakan autentikasi
-                                },
-                                body: JSON.stringify({
-                                    orderId,
-                                    newStatusId: 2, // ID untuk "Pesanan telah dibayar"
-                                }),
-                            });
-
-                            const updateResult = await updateResponse.json();
-                            if (updateResponse.ok) {
-                                console.log('Status pesanan diperbarui:', updateResult);
-                            } else {
-                                alert('Gagal memperbarui status pesanan.');
+                                const updateResult = await updateResponse.json();
+                                if (updateResponse.ok) {
+                                    console.log('Status pesanan diperbarui:', updateResult);
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal Memperbarui Status',
+                                        text: 'Status pesanan tidak dapat diperbarui.',
+                                        confirmButtonText: 'OK',
+                                    });
+                                }
+                            } catch (error) {
+                                console.error('Error updating order status:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Kesalahan',
+                                    text: 'Terjadi kesalahan saat memperbarui status pesanan.',
+                                    confirmButtonText: 'OK',
+                                });
                             }
-                        } catch (error) {
-                            console.error('Error updating order status:', error);
-                            alert('Terjadi kesalahan saat memperbarui status pesanan.');
-                        }
 
-                        // Hapus rincian pembayaran dari layar
-                        document.getElementById('order-id').textContent = '';
-                        document.getElementById('discount1').textContent = '';
-                        document.getElementById('final-amount').textContent = '';
-                        localStorage.removeItem('currentOrderId');
-                        window.location.reload(); // Refresh halaman setelah berhasil
+                            // Hapus rincian pembayaran dari layar
+                            document.getElementById('order-id').textContent = '';
+                            document.getElementById('discount1').textContent = '';
+                            document.getElementById('final-amount').textContent = '';
+                            localStorage.removeItem('currentOrderId');
+                            window.location.reload(); // Refresh halaman setelah berhasil
+                        });
                     },
                     onPending: function (result) {
-                        alert('Pembayaran tertunda.');
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Pembayaran Tertunda',
+                            text: 'Pembayaran Anda sedang diproses. Silakan cek status nanti.',
+                            confirmButtonText: 'OK',
+                        });
                         console.log(result);
                     },
                     onError: function (result) {
-                        alert('Pembayaran gagal.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Pembayaran Gagal',
+                            text: 'Pembayaran tidak berhasil. Silakan coba lagi.',
+                            confirmButtonText: 'OK',
+                        });
                         console.error(result);
                     },
                     onClose: function () {
-                        alert('Anda menutup pembayaran sebelum selesai.');
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Pembayaran Belum Selesai',
+                            text: 'Anda menutup pembayaran sebelum selesai.',
+                            confirmButtonText: 'OK',
+                        });
                     },
                 });
             } else {
-                alert('Gagal mendapatkan token pembayaran.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Mendapatkan Token',
+                    text: 'Token pembayaran tidak tersedia. Silakan coba lagi.',
+                    confirmButtonText: 'OK',
+                });
             }
         })
         .catch(error => {
             console.error('Error processing payment:', error);
-            alert('Terjadi kesalahan saat memproses pembayaran.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Kesalahan',
+                text: 'Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.',
+                confirmButtonText: 'OK',
+            });
         });
 }
 
-
-//STATUS PESANAN
+//STATUS PEMESANAN
 document.addEventListener('DOMContentLoaded', () => {
     const userId = localStorage.getItem('userId'); // Ambil userId dari localStorage
+    const selectAllCheckbox = document.getElementById('select-all');
 
     if (!userId) {
-        alert('User ID tidak ditemukan. Silakan login ulang.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'User ID Tidak Ditemukan',
+            text: 'Silakan login ulang.',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
-    // Gunakan GET untuk mengirim userId melalui parameter URL
+    // Ambil status pesanan user
     fetch(`/api/order/status/${userId}`)
         .then(response => {
             if (!response.ok) {
@@ -494,60 +624,199 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(orders => {
             if (!orders || orders.length === 0) {
-                alert('Pesanan tidak ditemukan.');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Pesanan Tidak Ditemukan',
+                    text: 'Tidak ada data pesanan untuk user ini.',
+                    confirmButtonText: 'OK',
+                });
                 return;
             }
 
-            // Tampilkan pesanan
-            const orderContainer = document.querySelector('.orderStatus');
-            orderContainer.innerHTML = ''; // Kosongkan kontainer
+            const orderTable = document.querySelector('.orderStatusTable tbody');
+            orderTable.innerHTML = ''; // Kosongkan tabel
 
             orders.forEach(order => {
-                const orderHtml = `
-                    <div class="orderStatus">
-                        <h4>Pesanan Anda: <span>${order.status_name}</span> - <span>${order.description}</span></h4>
-                        <p>330ml: <span>${order.nestle_pure_life_330ml}</span></p>
-                        <p>600ml: <span>${order.nestle_pure_life_600ml}</span></p>
-                        <p>1500ml: <span>${order.nestle_pure_life_1500ml}</span></p>
-                        <p>Diskon: <span>${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(order.discount)}</span></p>
-                        <p>Total Bayar: <span>${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(order.final_amount)}</span></p>
-                        <button class="updateStatusButton">Perbarui Status</button>
-                    </div>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="order-checkbox" data-order-id="${order.order_id}" />
+                    </td>
+                    <td>${order.order_id}</td>
+                    <td>${order.status_name}</td>
+                    <td>${order.description}</td>
+                    <td>${order.nestle_pure_life_330ml}</td>
+                    <td>${order.nestle_pure_life_600ml}</td>
+                    <td>${order.nestle_pure_life_1500ml}</td>
+                    <td>${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(order.discount)}</td>
+                    <td>${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(order.final_amount)}</td>
                 `;
-                const orderDiv = document.createElement('div');
-                orderDiv.innerHTML = orderHtml;
-                orderContainer.appendChild(orderDiv);
+                orderTable.appendChild(row);
             });
-
-            // Menambahkan event listener pada tombol Perbarui Status
-            const updateButtons = document.querySelectorAll('.updateStatusButton');
-            updateButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Proses perbarui status (jika diperlukan)
-                    // Misalnya mengupdate status pesanan atau panggil API untuk update status
-
-                    // Setelah update, refresh halaman
-                    location.reload(); // Me-refresh halaman
-                });
-            });
-
         })
-        .catch(error => {
-            console.error('Error fetching order details:', error);
-            alert(`Terjadi kesalahan: ${error.message}`);
+        .catch(err => Swal.fire({
+            icon: 'error',
+            title: 'Gagal Mengambil Pesanan',
+            text: `Terjadi kesalahan: ${err}`,
+            confirmButtonText: 'OK',
+        }));
+
+    // Handle "Select All" checkbox
+    selectAllCheckbox.addEventListener('change', () => {
+        const checkboxes = document.querySelectorAll('.order-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
         });
+    });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const orderStatusContainer = document.querySelector('.orderStatus');
+// Get all selected order IDs
+function getSelectedOrders() {
+    const selectedCheckboxes = document.querySelectorAll('.order-checkbox:checked');
+    return Array.from(selectedCheckboxes).map(checkbox => checkbox.getAttribute('data-order-id'));
+}
 
-    // Ubah gaya elemen
-    orderStatusContainer.style.border = '1px solid #ccc';
-    orderStatusContainer.style.padding = '10px';
-    orderStatusContainer.style.margin = '10px 0';
-});
+// Validate order status before performing action
+function validateOrderStatus(orderId, action) {
+    const orderRow = document.querySelector(`[data-order-id="${orderId}"]`).closest('tr');
+    const statusText = orderRow.cells[2].textContent; // Status berada di kolom ke-3 (index 2)
 
+    if (action === 'complete' && statusText === 'Selesai') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Aksi Tidak Diperbolehkan',
+            text: `Pesanan ${orderId} sudah selesai. Tidak bisa diselesaikan lagi.`,
+            confirmButtonText: 'OK',
+        });
+        return false;
+    } else if (action === 'cancel' && statusText === 'Dibatalkan') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Aksi Tidak Diperbolehkan',
+            text: `Pesanan ${orderId} sudah dibatalkan. Tidak bisa dibatalkan lagi.`,
+            confirmButtonText: 'OK',
+        });
+        return false;
+    }
+    return true;
+}
 
+// Menyelesaikan pesanan yang dipilih
+function completeSelectedOrders() {
+    const selectedOrders = getSelectedOrders();
+    if (selectedOrders.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Tidak Ada Pesanan Dipilih',
+            text: 'Silakan pilih pesanan terlebih dahulu.',
+            confirmButtonText: 'OK',
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Konfirmasi Penyelesaian',
+        text: `Anda yakin ingin menyelesaikan ${selectedOrders.length} pesanan terpilih?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Selesaikan',
+        cancelButtonText: 'Batal',
+    }).then(result => {
+        if (result.isConfirmed) {
+            fetch('/api/orders/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orders: selectedOrders }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Response dari API:", data); // Debugging
+
+                    if (data.success) { // Pastikan membaca 'success'
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pesanan Selesai',
+                            text: data.message,
+                            confirmButtonText: 'OK',
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menyelesaikan Pesanan',
+                            text: data.message || 'Terjadi kesalahan yang tidak diketahui.',
+                            confirmButtonText: 'OK',
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error("Terjadi kesalahan:", err);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Kesalahan Jaringan',
+                        text: 'Terjadi kesalahan saat menghubungi server. Silakan coba lagi.',
+                        confirmButtonText: 'OK',
+                    });
+                });
+        }
+    });
+}
+
+// Membatalkan pesanan
+function cancelSelectedOrders() {
+    const selectedOrders = getSelectedOrders();
+    if (selectedOrders.length === 0) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Tidak Ada Pesanan Dipilih',
+            text: 'Silakan pilih pesanan terlebih dahulu.',
+            confirmButtonText: 'OK',
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Konfirmasi Pembatalan',
+        text: `Anda yakin ingin membatalkan ${selectedOrders.length} pesanan terpilih?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Batalkan',
+        cancelButtonText: 'Batal',
+    }).then(result => {
+        if (result.isConfirmed) {
+            selectedOrders.forEach(orderId => {
+                fetch(`/api/order/${orderId}/cancel`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Pesanan Dibatalkan',
+                                text: `Pesanan ${orderId} berhasil dibatalkan.`,
+                                confirmButtonText: 'OK',
+                            }).then(() => location.reload());
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                // title: 'Gagal Membatalkan Pesanan',
+                                text: data.message || `Gagal membatalkan pesanan ${orderId}.`,
+                                confirmButtonText: 'OK',
+                            }).then(() => location.reload());
+                        }
+                    })
+                    .catch(err => Swal.fire({
+                        icon: 'error',
+                        title: 'Kesalahan',
+                        text: `Terjadi kesalahan pada pesanan ${orderId}: ${err}`,
+                        confirmButtonText: 'OK',
+                    }));
+            });
+        }
+    });
+}
 
 //RIWAYAT PEMESANAN USER
 document.addEventListener('DOMContentLoaded', () => {
@@ -637,19 +906,28 @@ document.getElementById('categoryOption').addEventListener('change', function ()
         });
 });
 
-//MENGIRIM DATA PENDAFTARAN
 document.getElementById('programSelectionForm').addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const programId = document.getElementById('programOption').value;
     if (!programId) {
-        alert('Pilih program terlebih dahulu!');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Pilih Program',
+            text: 'Silakan pilih program terlebih dahulu.',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
     const token = localStorage.getItem('token');  // Ambil token dari localStorage
     if (!token) {
-        alert('Token tidak ditemukan. Silakan login kembali.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Token Tidak Ditemukan',
+            text: 'Silakan login kembali.',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
@@ -668,16 +946,33 @@ document.getElementById('programSelectionForm').addEventListener('submit', async
         const result = await response.json();
 
         if (response.ok) {
-            alert('Berhasil mendaftar program baru!');
-            window.location.reload(); // Refresh halaman setelah berhasil
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil Mendaftar',
+                text: 'Anda telah berhasil mendaftar untuk program baru!',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                window.location.reload(); // Refresh halaman setelah berhasil
+            });
         } else {
-            alert(result.message || 'Gagal mendaftar program.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Mendaftar',
+                text: result.message || 'Terjadi kesalahan saat pendaftaran.',
+                confirmButtonText: 'OK',
+            });
         }
     } catch (error) {
         console.error(error);
-        alert('Terjadi kesalahan saat mendaftar program.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Terjadi Kesalahan',
+            text: 'Terjadi kesalahan saat mendaftar program.',
+            confirmButtonText: 'OK',
+        });
     }
 });
+
 
 //MELIHAT PROGRAM YANG DIIKUTI
 async function fetchRegisteredPrograms() {
@@ -794,18 +1089,37 @@ async function saveAccount() {
 
         if (!response.ok) throw new Error('Failed to update account data.');
 
-        alert('Data akun berhasil diperbarui!');
-        location.reload(); // Muat ulang halaman untuk merefresh data
+        Swal.fire({
+            icon: 'success',
+            title: 'Data Akun Berhasil Diperbarui',
+            text: 'Akun Anda telah berhasil diperbarui!',
+            confirmButtonText: 'OK',
+        }).then(() => {
+            location.reload(); // Muat ulang halaman untuk merefresh data
+        });
     } catch (error) {
         console.error('Error updating account data:', error);
-        alert('Gagal memperbarui data akun.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Memperbarui Data',
+            text: 'Terjadi kesalahan saat memperbarui data akun.',
+            confirmButtonText: 'OK',
+        });
     }
 }
 
-//GANTI PASSWORD==========================
+// GANTI PASSWORD ==========================
 function toggleChangePasswordForm() {
     const section = document.getElementById('changePasswordSection');
-    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+    const akunSection = document.getElementById('akun');
+
+    if (section.style.display === 'none' || section.style.display === '') {
+        section.style.display = 'block';
+        akunSection.style.display = 'none'; // Sembunyikan informasi akun
+    } else {
+        section.style.display = 'none';
+        akunSection.style.display = 'block'; // Tampilkan kembali informasi akun
+    }
 }
 
 async function changePassword() {
@@ -814,7 +1128,12 @@ async function changePassword() {
     const confirmPassword = document.getElementById('confirmPassword').value;
 
     if (newPassword !== confirmPassword) {
-        alert('Password baru dan konfirmasi password tidak cocok.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Password Tidak Cocok',
+            text: 'Password baru dan konfirmasi password tidak cocok.',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
@@ -832,14 +1151,30 @@ async function changePassword() {
         const result = await response.json();
 
         if (response.ok) {
-            alert('Password berhasil diubah.');
-            document.getElementById('changePasswordForm').reset();
+            Swal.fire({
+                icon: 'success',
+                title: 'Password Berhasil Diubah',
+                text: 'Password Anda telah berhasil diperbarui.',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                document.getElementById('changePasswordForm').reset();
+            });
         } else {
-            alert(result.message || 'Gagal mengganti password.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Mengganti Password',
+                text: result.message || 'Gagal mengganti password.',
+                confirmButtonText: 'OK',
+            });
         }
     } catch (error) {
         console.error('Error changing password:', error);
-        alert('Terjadi kesalahan saat mengganti password.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Terjadi Kesalahan',
+            text: 'Terjadi kesalahan saat mengganti password.',
+            confirmButtonText: 'OK',
+        });
     }
 }
 

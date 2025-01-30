@@ -470,20 +470,18 @@ footer {
   right: 0;
 }
 
-.harga330ml, .harga600ml, .harga1500ml {
-  margin-top: 10px;
+.harga h1 {
+  font-size: 24px; /* Perbesar ukuran huruf */
+  margin-top: 20px; /* Tambahkan margin atas */
+  font-weight: bold; /* Tambahkan gaya tebal untuk nama produk */
 }
 
-.harga330ml h1, .harga600ml h1, .harga1500ml h1 {
-  font-size: 1.2rem;
-  margin: 10px 0 5px;
+.harga p {
+  font-size: 20px; /* Perbesar ukuran huruf */
+  margin-top: 10px; /* Tambahkan margin atas */
+  font-weight: bold; /* Tambahkan gaya tebal untuk harga */
 }
 
-.harga330ml p, .harga600ml p, .harga1500ml p {
-  font-size: 1rem;
-  color: #ffffff;
-  font-weight: bold;
-}
 
 .promohome {
 display: inline;

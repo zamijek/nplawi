@@ -17,7 +17,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
 
         if (response.ok) {
             // Simpan token ke localStorage
-            localStorage.setItem('token', data.token); 
+            localStorage.setItem('token', data.token);
             localStorage.setItem('userId', data.userId);
             localStorage.setItem('role', data.role);
 
@@ -25,25 +25,35 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
             Swal.fire({
                 icon: 'success',
                 title: 'Login Berhasil!',
-                text: 'Selamat datang, ' + username + '!',
+                html: `<b>Selamat datang, ${username}!</b><br>Akun Anda memiliki peran <i>${data.role}</i>.`,
                 showConfirmButton: false,
-                timer: 1500
+                timer: 2000,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'swal-custom-popup', // Tambahkan kustom class jika diperlukan
+                },
             });
 
             // Redirect sesuai role setelah beberapa detik
             setTimeout(() => {
                 if (data.role === 'admin') {
                     window.location.href = 'admin.html';
+                } else if (data.role === 'kepalaCabang') {
+                    window.location.href = 'kepalacabang.html';
                 } else {
                     window.location.href = 'user.html';
                 }
-            }, 1500);
+            }, 2000);
         } else {
-            // SweetAlert2 untuk error
+            // SweetAlert2 untuk error login
             Swal.fire({
                 icon: 'error',
                 title: 'Login Gagal',
-                text: data.message || 'Terjadi kesalahan saat login.',
+                html: `<b>${data.message || 'Username atau password salah.'}</b><br>Silakan coba lagi.`,
+                confirmButtonText: 'Coba Lagi',
+                customClass: {
+                    confirmButton: 'swal-error-btn', // Tambahkan kustom class jika diperlukan
+                },
             });
         }
     } catch (error) {
@@ -54,6 +64,11 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
             icon: 'error',
             title: 'Terjadi Kesalahan',
             text: 'Silakan coba lagi nanti.',
+            footer: '<a href="support.html">Hubungi dukungan?</a>',
+            confirmButtonText: 'Tutup',
+            customClass: {
+                confirmButton: 'swal-error-btn', // Tambahkan kustom class jika diperlukan
+            },
         });
     }
 });

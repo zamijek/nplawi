@@ -158,7 +158,7 @@ function invoiceOrder(req, res) {
 
 
 //CHECK INVOICE SUDAH DICETAK ATAU BELUM===========================
-function checkInvoice (req, res) {
+function checkInvoice(req, res) {
     const { orderId } = req.params;
 
     db.query('SELECT is_invoice_printed FROM orders WHERE order_id = ?', [orderId], (err, results) => {
@@ -212,28 +212,6 @@ async function shipOrder(req, res) {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Gagal mengirim pesanan.' });
-    }
-}
-
-async function completeOrder(req, res) {
-    const { orders } = req.body;
-    if (!orders || orders.length === 0) {
-        return res.status(400).json({ message: 'Tidak ada pesanan yang dipilih.' });
-    }
-
-    try {
-        // Validasi status apakah sudah dalam status "Dikirim"
-        const [currentStatus] = await db.promise().query('SELECT status_id FROM orders WHERE order_id IN (?)', [orders]);
-        if (currentStatus.some(order => order.status_id !== 4)) {
-            return res.status(400).json({ message: 'Beberapa pesanan sudah tidak dapat diselesaikan (status bukan "Dikirim").' });
-        }
-
-        // Lakukan update status pesanan menjadi "Selesai"
-        await db.promise().query('UPDATE orders SET status_id = 5 WHERE order_id IN (?) AND status_id = 4', [orders]);
-        res.status(200).json({ message: 'Pesanan berhasil diselesaikan.' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Gagal menyelesaikan pesanan.' });
     }
 }
 
@@ -524,48 +502,92 @@ async function dataToko(req, res) {
     }
 }
 
-// RIWAYAT TRANSAKSI TOKO
-async function riwayatTransaksi(req, res) {
-    const { customer_id } = req.params;  // Ambil dari req.params, bukan req.query
-    console.log('Received customer_id:', customer_id);  // Debugging
-
-    // if (!customer_id) {
-    //     return res.status(400).json({ success: false, message: 'Customer ID tidak ditemukan' });
-    // }
-
+//MENDAPATKAN WILAYAH===================
+async function getWilayah(req, res) {
     try {
-        const query = `
-           SELECT 
-            u.customer_id,
-            u.wilayah_toko,
-            o.order_date AS tanggal,
-            SUM(oi.quantity) AS jumlah_pesanan,
-            o.final_amount AS jumlah_harga,
-            os.status_name AS status
-            FROM users u
-            LEFT JOIN orders o ON u.customer_id = o.customer_id
-            LEFT JOIN order_items oi ON o.order_id = oi.order_id
-            LEFT JOIN order_status os ON o.status_id = os.status_id
-            WHERE u.customer_id = ?
-            GROUP BY o.order_id
-            ORDER BY o.order_date DESC;
-        `;
-        const results = await queryPromise(query, [customer_id]);
-
+        const [rows] = await db.promise().query('SELECT DISTINCT wilayah_toko FROM orders');
         res.json({
             success: true,
-            data: results,
+            data: rows,
         });
     } catch (error) {
-        console.error('Error fetching transaction history:', error);
-        res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server' });
+        console.error('Error fetching wilayah:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Terjadi kesalahan pada server.',
+        });
     }
 }
 
 
+// RIWAYAT TRANSAKSI TOKO
+async function riwayatTransaksi(req, res) {
+    const { bulan, tahun, namaToko, wilayah } = req.query;
+
+    if (!bulan || !tahun) {
+        return res.status(400).json({
+            success: false,
+            message: 'Bulan dan tahun harus diisi!',
+        });
+    }
+
+    try {
+        let query = `
+            SELECT 
+                u.nama_toko AS nama_toko,
+                DATE_FORMAT(o.order_date, '%d-%m-%Y') AS tanggal,
+                SUM(CASE WHEN p.ukuran_produk = '330ml' THEN oi.quantity ELSE 0 END) AS ukuran_330ml,
+                SUM(CASE WHEN p.ukuran_produk = '600ml' THEN oi.quantity ELSE 0 END) AS ukuran_600ml,
+                SUM(CASE WHEN p.ukuran_produk = '1500ml' THEN oi.quantity ELSE 0 END) AS ukuran_1500ml,
+                SUM(oi.quantity) AS jumlah_pesanan,
+                o.final_amount AS jumlah_harga,
+                os.status_name AS status
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN produk p ON oi.product_id = p.produk_id
+            JOIN users u ON o.customer_id = u.customer_id
+            JOIN order_status os ON o.status_id = os.status_id
+            WHERE MONTH(o.order_date) = ?
+            AND YEAR(o.order_date) = ?
+            AND o.status_id = 5
+        `;
+
+        const params = [bulan, tahun];
+
+        // Tambahkan filter nama toko jika ada
+        if (namaToko) {
+            query += ' AND u.nama_toko LIKE ?';
+            params.push(`%${namaToko}%`);
+        }
+
+        // Tambahkan filter wilayah jika ada
+        if (wilayah) {
+            query += ' AND u.wilayah_toko = ?';
+            params.push(wilayah);
+        }
+
+        query += ' GROUP BY o.order_id ORDER BY o.order_date DESC';
+
+        const [rows] = await db.promise().query(query, params);
+
+        res.json({
+            success: true,
+            data: rows,
+        });
+    } catch (error) {
+        console.error('Error fetching transaction history:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Terjadi kesalahan pada server.',
+        });
+    }
+}
+
 //REPORT PENJUALAN==================================
 async function salesReport(req, res) {
     try {
+        const { month, year } = req.query;
+
         const query = `
             SELECT 
                 COUNT(DISTINCT o.order_id) AS total_transaksi,
@@ -581,22 +603,25 @@ async function salesReport(req, res) {
             JOIN 
                 produk p ON oi.product_id = p.produk_id
             WHERE 
-                o.status_id = 5 -- Status Selesai
-                ;
+                o.status_id = 5 
+                AND MONTH(o.order_date) = ? 
+                AND YEAR(o.order_date) = ?
         `;
 
-        const [results] = await db.promise().query(query);
-        res.json(results[0]); // Kirim hasil query sebagai JSON
+        const [results] = await db.promise().query(query, [month, year]);
+        res.json(results[0]);
     } catch (err) {
         console.error('Error fetching sales report:', err);
         res.status(500).json({ message: 'Failed to fetch sales report.' });
     }
-};
+}
 
 //TOKO TERBAIK==================
 async function topShop(req, res) {
     try {
-        const [rows] = await db.promise().query(`
+        const { month, year } = req.query;
+
+        const query = `
             SELECT 
                 o.nama_toko,
                 o.nama_sales,
@@ -605,30 +630,36 @@ async function topShop(req, res) {
                 SUM(CASE WHEN p.produk_id = 2 THEN oi.quantity ELSE 0 END) AS quantity_600ml,
                 SUM(CASE WHEN p.produk_id = 3 THEN oi.quantity ELSE 0 END) AS quantity_1500ml,
                 SUM(oi.quantity) AS total_quantity
-            FROM orders o
-            JOIN order_items oi ON o.order_id = oi.order_id
-            JOIN produk p ON oi.product_id = p.produk_id
-            GROUP BY o.nama_toko, o.nama_sales, o.wilayah_toko
-            ORDER BY total_quantity DESC
-            LIMIT 10;
-        `);
+            FROM 
+                orders o
+            JOIN 
+                order_items oi ON o.order_id = oi.order_id
+            JOIN 
+                produk p ON oi.product_id = p.produk_id
+            WHERE 
+                MONTH(o.order_date) = ? 
+                AND YEAR(o.order_date) = ?
+                AND o.status_id = 5
+            GROUP BY 
+                o.nama_toko, o.nama_sales, o.wilayah_toko
+            ORDER BY 
+                total_quantity DESC
+            LIMIT 10
+        `;
 
-
-        res.json(rows); // Mengembalikan data dalam format JSON
+        const [rows] = await db.promise().query(query, [month, year]);
+        res.json(rows);
     } catch (err) {
         console.error('Error fetching best shop data:', err);
-        res.status(500).json({ message: 'Gagal mengambil data Toko Terbaik.' });
+        res.status(500).json({ message: 'Failed to fetch top shops.' });
     }
-};
-
-
-
+}
 
 
 module.exports = {
-    dataOrder, invoiceOrder, checkInvoice, processOrder, shipOrder, completeOrder,
+    dataOrder, invoiceOrder, checkInvoice, processOrder, shipOrder,
     priceProduct, priceUpdate, stockProduct, updateStock,
     monitoringProgram, getProgramsByCategory,
-    getProgramDetails, updateProgram, dataToko, riwayatTransaksi,
+    getProgramDetails, updateProgram, dataToko, getWilayah, riwayatTransaksi,
     salesReport, topShop
 };

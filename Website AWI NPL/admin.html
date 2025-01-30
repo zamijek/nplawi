@@ -29,7 +29,7 @@
         <!-- Sidebar Menu -->
         <div class="dashboard-menu">
             <a href="#" onclick="showContent('orders')">Manajemen Pesanan</a>
-            <a href="#" onclick="showContent('stock')">Manajemen Produk</a>
+            <!-- <a href="#" onclick="showContent('stock')">Manajemen Produk</a> -->
             <a href="#" onclick="showContent('promos')">Program NPL</a>
             <a href="#" onclick="showContent('users')">Manajemen Toko</a>
             <a href="#" onclick="showContent('reports')">Laporan Penjualan</a>
@@ -70,8 +70,8 @@
                         <div class="bulk-actions">
                             <button onclick="processSelectedOrders()">Proses</button>
                             <button onclick="printSelectedInvoices()">Cetak Invoice</button>
-                            <button onclick="shipSelectedOrders()">Kirim</button>
-                            <button onclick="completeSelectedOrders()">Selesai</button>
+                            <!-- <button onclick="shipSelectedOrders()">Kirim</button> -->
+                            <!-- <button onclick="completeSelectedOrders()">Selesai</button> -->
                         </div>
                     </div>
                 </div>
@@ -217,7 +217,7 @@
                 <div class="componentToko">
                     <h2>Daftar Toko</h2>
                     <div class="areaToko">
-                        <label for="areaToko">Pilih Wilayah Toko: </label>
+                        <label for="areaToko">Wilayah Toko: </label>
                         <select name="areaToko" id="areaToko" required>
                             <option value="" disabled selected>Pilih Wilayah</option>
                             <option value="Jakarta Timur">Jakarta Timur</option>
@@ -225,6 +225,10 @@
                             <option value="Jakarta Pusat">Jakarta Pusat</option>
                         </select>
                         <p>Nama Sales: <span id="salesName" class="salesInfo">Nama Sales akan muncul di sini</span></p>
+                    </div>
+                    <div class="searchToko">
+                        <label for="searchNamaToko">Nama Toko:</label>
+                        <input type="text" id="searchNamaToko" placeholder="Ketik nama toko...">
                     </div>
                     <div>
                         <table class="tabel-shop" border="1">
@@ -245,18 +249,57 @@
                         </table>
                     </div>
                 </div>
+
                 <div class="component">
                     <h3>Riwayat Pembelian Toko</h3>
-                    <table id="riwayatTable">
+                    <div class="filterRiwayat">
+                        <label for="filterBulan">Bulan:</label>
+                        <select id="filterBulan">
+                            <option value="" disabled selected>Pilih Bulan</option>
+                            <option value="1">Januari</option>
+                            <option value="2">Februari</option>
+                            <option value="3">Maret</option>
+                            <option value="4">April</option>
+                            <option value="5">Mei</option>
+                            <option value="6">Juni</option>
+                            <option value="7">Juli</option>
+                            <option value="8">Agustus</option>
+                            <option value="9">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                        <label for="filterTahun">Tahun:</label>
+                        <select id="filterTahun">
+                            <option value="" disabled selected>Pilih Tahun</option>
+                            <!-- Tambahkan tahun secara dinamis -->
+                        </select>
+                        <label for="filterWilayah">Wilayah:</label>
+                        <select id="filterWilayah">
+                            <option value="" disabled selected>Pilih Wilayah</option>
+                            <!-- Wilayah akan ditambahkan secara dinamis -->
+                        </select>
+                        <label for="filterNamaToko">Nama Toko:</label>
+                        <input type="text" id="filterNamaToko" placeholder="Ketik nama toko...">
+                        <button id="filterButton">Filter</button>
+                    </div>
+                    <table id="riwayatTable" border="1">
                         <thead>
                             <tr>
-                                <th>Tanggal</th>
-                                <th>Jumlah Pesanan</th>
-                                <th>Jumlah Harga</th>
-                                <th>Status</th>
+                                <th rowspan="2">Nama Toko</th>
+                                <th rowspan="2">Tanggal</th>
+                                <th colspan="3">Ukuran</th>
+                                <th rowspan="2">Jumlah Pesanan</th>
+                                <th rowspan="2">Jumlah Harga</th>
+                                <th rowspan="2">Status</th>
+                            </tr>
+                            <tr>
+                                <th>330ml</th>
+                                <th>600ml</th>
+                                <th>1500ml</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="riwayatTableBody">
                             <!-- Data riwayat transaksi akan ditambahkan di sini -->
                         </tbody>
                     </table>
@@ -266,6 +309,28 @@
             <!-- Laporan Penjualan -->
             <div id="reports" class="content-section">
                 <h2>Analisis dan Laporan Penjualan Bulanan</h2>
+                <div id="filters">
+                    <label for="month">Bulan:</label>
+                    <select id="month">
+                        <option value="1">Januari</option>
+                        <option value="2">Februari</option>
+                        <option value="3">Maret</option>
+                        <option value="4">April</option>
+                        <option value="5">Mei</option>
+                        <option value="6">Juni</option>
+                        <option value="7">Juli</option>
+                        <option value="8">Agustus</option>
+                        <option value="9">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+
+                    <label for="year">Tahun:</label>
+                    <select id="year"></select>
+
+                    <button id="filter-button">Tampilkan</button>
+                </div>
 
                 <!-- Laporan Penjualan -->
                 <div class="report-orders">
@@ -296,7 +361,6 @@
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>

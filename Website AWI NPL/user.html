@@ -42,6 +42,7 @@
             </div>
             <div id="order" class="content-section">
                 <h2>Buat Pemesanan</h2>
+                <p>Jumlah minimal pesanan adalah 40 karton!</p>
                 <form>
                     <div id="product-list"></div> <!-- Tempat produk akan ditampilkan -->
                 </form>
@@ -64,7 +65,7 @@
             <div id="stok" class="content-section" style="display: none;">
                 <!-- Status Pesanan -->
                 <h2>Status Pemesanan</h2>
-                <div>
+                <div id="detail-pembayaran">
                     <h4>Detail Pembayaran</h4>
                     <p>Order ID: <span id="order-id"></span></p>
                     <p>Diskon: <span id="discount1"></span></p>
@@ -72,9 +73,34 @@
                     <button onclick="proceedPayment()">Lanjutkan Pembayaran</button>
                     <button id="cancel-order-btn">Batalkan Pesanan</button>
                 </div>
-                <div class="orderStatus">
-                    <!-- Pesanan akan muncul di sini -->
+                <table class="orderStatusTable" border="1">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">
+                                <input type="checkbox" id="select-all" /> <!-- Checkbox Pilih Semua -->
+                            </th>
+                            <th rowspan="2">OrderId</th>
+                            <th rowspan="2">Status</th>
+                            <th rowspan="2">Deskripsi</th>
+                            <th colspan="3">Ukuran</th>
+                            <th rowspan="2">Discount</th>
+                            <th rowspan="2">Total Bayar</th>
+                        </tr>
+                        <tr>
+                            <th>330ml</th>
+                            <th>600ml</th>
+                            <th>1500ml</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Pesanan akan ditampilkan di sini melalui JavaScript -->
+                    </tbody>
+                </table>
+                <div class="bulk-actions">
+                    <button onclick="completeSelectedOrders()">Selesai</button>
+                    <button id="cancelSelectedOrders" onclick="cancelSelectedOrders()">Batal</button>
                 </div>
+                
                 <!-- Riwayat Pemesanan -->
                 <div id="riwayatPemesanan" class="riwayat-Pemesanan">
                     <h4>Riwayat Pemesanan</h4>

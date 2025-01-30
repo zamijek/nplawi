@@ -1,5 +1,6 @@
 const db = require('../config/db');  // Import koneksi database
 const midtransClient = require('midtrans-client');
+const schedule = require('node-schedule');
 require('dotenv').config();
 
 // Inisialisasi Snap Client
@@ -345,12 +346,37 @@ async function createOrder(req, res) {
     }
 }
 
+//orderan Selesai
+async function completeOrder(req, res) {
+    const { orders } = req.body;
+    if (!orders || orders.length === 0) {
+        return res.status(400).json({ success: false, message: 'Tidak ada pesanan yang dipilih.' });
+    }
+
+    try {
+        // Validasi status apakah sudah dalam status "Dikirim"
+        const [currentStatus] = await db.promise().query('SELECT status_id FROM orders WHERE order_id IN (?)', [orders]);
+        if (currentStatus.some(order => order.status_id !== 4)) {
+            return res.status(400).json({ success: false, message: 'Beberapa pesanan sudah tidak dapat diselesaikan (status bukan "Dikirim").' });
+        }
+
+        // Lakukan update status pesanan menjadi "Selesai"
+        await db.promise().query('UPDATE orders SET status_id = 5 WHERE order_id IN (?) AND status_id = 4', [orders]);
+
+        // 🔥 Tambahkan success: true agar frontend bisa mengenali suksesnya
+        res.status(200).json({ success: true, message: 'Pesanan berhasil diselesaikan.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Gagal menyelesaikan pesanan.' });
+    }
+}
+
 //cancel order
 async function cancelOrder(req, res) {
     const { orderId } = req.params;
 
     try {
-        // Cek apakah pesanan ada dan statusnya bukan "Dibatalkan" atau "Selesai"
+        // Cek apakah pesanan ada dan ambil detailnya
         const checkOrderQuery = `
             SELECT o.order_id, o.status_id, oi.product_id, oi.quantity 
             FROM orders o
@@ -364,8 +390,12 @@ async function cancelOrder(req, res) {
         }
 
         const order = orderDetails[0];
-        if (order.status_id === 4 || order.status_id === 5 || order.status_id === 6) { // 5: Selesai, 6: Dibatalkan
-            return res.status(400).json({ message: 'Pesanan ini sudah tidak dapat dibatalkan.' });
+
+        // Pastikan status pesanan adalah 1 (hanya status 1 yang bisa dibatalkan)
+        if (order.status_id !== 1) { // 1: Menunggu Pembayaran
+            return res.status(400).json({ 
+                message: `Pesanan ini tidak dapat dibatalkan karena statusnya bukan 'Menunggu Pembayaran'.` 
+            });
         }
 
         // Perbarui status pesanan menjadi "Dibatalkan"
@@ -503,15 +533,16 @@ async function orderStatus(req, res) {
             SUM(CASE WHEN p.produk_id = 1 THEN oi.quantity ELSE 0 END) AS nestle_pure_life_330ml,
             SUM(CASE WHEN p.produk_id = 2 THEN oi.quantity ELSE 0 END) AS nestle_pure_life_600ml,
             SUM(CASE WHEN p.produk_id = 3 THEN oi.quantity ELSE 0 END) AS nestle_pure_life_1500ml
-        FROM orders o
-        JOIN order_status os ON o.status_id = os.status_id
-        JOIN order_items oi ON o.order_id = oi.order_id
-        JOIN produk p ON oi.product_id = p.produk_id
-        WHERE o.customer_id = ?
-        GROUP BY o.order_id, os.status_name, os.description
-        ORDER BY o.order_date DESC
-        LIMIT 1;
-    `;
+            FROM orders o
+            JOIN order_status os ON o.status_id = os.status_id
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN produk p ON oi.product_id = p.produk_id
+            WHERE o.customer_id = ?
+            AND o.status_id != 6 -- Mengecualikan status_id 6
+            GROUP BY o.order_id, os.status_name, os.description
+            ORDER BY o.order_date DESC
+            LIMIT 3;
+        `;
 
     try {
         const [orderDetails] = await db.promise().query(query, [userId]);
@@ -527,10 +558,10 @@ async function orderStatus(req, res) {
     }
 };
 
+
 //RIWAYAT TRANSAKSI=================
 function orderHistory(req, res) {
     const userId = req.params.userId;
-    console.log(`Fetching order history for userId: ${userId}`);
 
     const sql = `
         SELECT 
@@ -559,7 +590,7 @@ function orderHistory(req, res) {
             os.status_name
         ORDER BY 
             o.order_date DESC
-            LIMIT 15;
+            LIMIT 10;
     `;
 
     db.query(sql, [userId], (err, results) => {
@@ -573,16 +604,69 @@ function orderHistory(req, res) {
             return res.status(404).json({ error: 'No orders found for this user' });
         }
 
-        console.log('Results found:', results);
         res.json(results);
     });
 }
 
+// Scheduler: Periksa setiap hari pada pukul 00:00
+schedule.scheduleJob('0 0 * * *', async () => {
+    console.log('Menjalankan validasi otomatis pesanan...');
 
+    try {
+        // Ambil pesanan yang statusnya masih "Menunggu Pembayaran" atau "Dikirim" dan berusia lebih dari 2 hari
+        const query = `
+            SELECT order_id, status_id 
+            FROM orders 
+            WHERE status_id IN (1, 4) AND TIMESTAMPDIFF(DAY, order_date, NOW()) >= 2
+        `;
+        const [orders] = await db.promise().query(query);
+
+        if (orders.length > 0) {
+            const completeOrders = [];
+            const cancelOrders = [];
+
+            orders.forEach(order => {
+                // Logika: Jika status "Menunggu Pembayaran" -> otomatis batal,
+                // Jika status "Dikirim" -> otomatis selesai
+                if (order.status_id === 1) {
+                    cancelOrders.push(order.order_id);
+                } else if (order.status_id === 4) {
+                    completeOrders.push(order.order_id);
+                }
+            });
+
+            // Update status pesanan yang otomatis batal
+            if (cancelOrders.length > 0) {
+                const cancelQuery = `
+                    UPDATE orders 
+                    SET status_id = 6 
+                    WHERE order_id IN (?)
+                `;
+                await db.promise().query(cancelQuery, [cancelOrders]);
+                console.log(`Pesanan dibatalkan: ${cancelOrders.join(', ')}`);
+            }
+
+            // Update status pesanan yang otomatis selesai
+            if (completeOrders.length > 0) {
+                const completeQuery = `
+                    UPDATE orders 
+                    SET status_id = 5 
+                    WHERE order_id IN (?)
+                `;
+                await db.promise().query(completeQuery, [completeOrders]);
+                console.log(`Pesanan selesai: ${completeOrders.join(', ')}`);
+            }
+        } else {
+            console.log('Tidak ada pesanan yang perlu diperbarui.');
+        }
+    } catch (error) {
+        console.error('Error dalam validasi otomatis:', error);
+    }
+});
 
 module.exports = {
     getUserId, getProducts,
-    createOrder, cancelOrder, getOrderId, paymentOrder, updateOrderStatus, orderStatus, orderHistory,
+    createOrder, completeOrder, cancelOrder, getOrderId, paymentOrder, updateOrderStatus, orderStatus, orderHistory,
     getPrograms, registerProgram, getRegisteredPrograms,
     getAccountData, updateAccountData
 };

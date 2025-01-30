@@ -4,10 +4,9 @@ const router = express.Router();
 
 const { verifyToken } = require('../middleware/authMiddleware');
 const { getUserId, getProducts,
-    createOrder, cancelOrder, getOrderId, paymentOrder,
-    getPrograms, registerProgram, getRegisteredPrograms,
+    createOrder, cancelOrder, getOrderId, paymentOrder, completeOrder,
+    getPrograms, registerProgram, getRegisteredPrograms, updateOrderStatus, 
     getAccountData, updateAccountData, 
-    updateOrderStatus,
     orderStatus,
     orderHistory} = require('../controllers/userMenuController');  // Import controller
 
@@ -22,6 +21,7 @@ router.put('/order/:orderId/cancel', cancelOrder);
 router.post('/payment', paymentOrder);
 router.put('/payment/order', updateOrderStatus);
 router.get('/order/status/:userId', orderStatus);
+router.post('/orders/complete', completeOrder);
 router.get('/orderhistory/:userId', orderHistory);
 
 // Rute untuk mendapatkan daftar program
@@ -32,8 +32,6 @@ router.get('/registeredPrograms/:userId', getRegisteredPrograms);
 //rute edit akun
 router.get('/getAccount/:userId', getAccountData);
 router.put('/updateAccount/:userId', updateAccountData);
-
-
 
 
 module.exports = router;
