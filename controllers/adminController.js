@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const PDFDocument = require('pdfkit');
+const ExcelJS = require('exceljs');
 require('dotenv').config();
 
 // Membuat promise untuk query database
@@ -655,11 +656,132 @@ async function topShop(req, res) {
     }
 }
 
+// EXPORT EXCELL
+async function exportExcell(req, res) {
+    try {
+        const { month, year } = req.query;
+
+        if (!month || !year) {
+            return res.status(400).json({ error: 'Bulan dan tahun harus dipilih' });
+        }
+
+        // Query untuk mengambil data dari database, menambahkan order_id
+        const [salesData] = await db.promise().query(`
+            SELECT o.order_id, o.nama_toko, o.wilayah_toko, o.nama_sales, 
+                   DATE_FORMAT(o.order_date, '%Y-%m-%d') AS tanggal,
+                   SUM(CASE WHEN p.ukuran_produk = '330ml' THEN oi.quantity ELSE 0 END) AS ukuran_330ml,
+                   SUM(CASE WHEN p.ukuran_produk = '600ml' THEN oi.quantity ELSE 0 END) AS ukuran_600ml,
+                   SUM(CASE WHEN p.ukuran_produk = '1500ml' THEN oi.quantity ELSE 0 END) AS ukuran_1500ml,
+                   SUM(oi.quantity) AS jumlah_pesanan, 
+                   SUM(oi.total) AS jumlah_harga,
+                   s.status_name AS status
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN produk p ON oi.product_id = p.produk_id
+            JOIN order_status s ON o.status_id = s.status_id
+            WHERE MONTH(o.order_date) = ? AND YEAR(o.order_date) = ?
+            GROUP BY o.order_id, o.nama_toko, o.wilayah_toko, o.nama_sales, o.order_date, s.status_name
+            ORDER BY o.order_date ASC
+        `, [month, year]);
+
+        if (salesData.length === 0) {
+            return res.status(404).json({ error: 'Tidak ada data untuk bulan dan tahun ini' });
+        }
+
+        // Buat workbook dan worksheet
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Laporan Penjualan');
+
+        // Tambahkan judul di baris pertama
+        worksheet.mergeCells('A1:K1');
+        const titleRow = worksheet.getCell('A1');
+        titleRow.value = `Laporan Penjualan Nestle Pure Life - ${month}/${year}`;
+        titleRow.font = { size: 16, bold: true };
+        titleRow.alignment = { horizontal: 'center', vertical: 'middle' };
+
+        // Definisi Header dengan 'Order ID' sebagai kolom pertama
+        const headers = [
+            'Order ID', 'Nama Toko', 'Wilayah Toko', 'Nama Sales', 'Tanggal',
+            '330ml', '600ml', '1500ml', 'Total Pesanan', 'Total Harga', 'Status'
+        ];
+        const headerRow = worksheet.addRow(headers);
+
+        // Styling header (tebal, tengah, warna latar biru)
+        headerRow.eachCell((cell) => {
+            cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }; // Putih
+            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '0070C0' } }; // Biru
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+        });
+
+        // Tambahkan data ke worksheet dengan menyisipkan order_id pada kolom pertama
+        salesData.forEach((item) => {
+            const row = worksheet.addRow([
+                item.order_id, // Menambahkan order_id pada kolom pertama
+                item.nama_toko, item.wilayah_toko, item.nama_sales, item.tanggal,
+                item.ukuran_330ml, item.ukuran_600ml, item.ukuran_1500ml,
+                item.jumlah_pesanan, item.jumlah_harga, item.status
+            ]);
+
+            // Atur border untuk tiap sel data
+            row.eachCell((cell) => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+                cell.alignment = { vertical: 'middle', horizontal: 'center' };
+            });
+
+            // Format angka untuk total harga agar menjadi format mata uang
+            row.getCell(10).numFmt = '"RP"#,##0'; // Menambahkan "RP" di depan total harga
+        });
+
+        // **Perbaikan AutoFit Kolom**
+        worksheet.columns.forEach((column, index) => {
+            if (headers[index]) { // Cek apakah header ada
+                column.width = headers[index].length < 12 ? 12 : headers[index].length + 5;
+            } else {
+                column.width = 12; // Default jika tidak ada header
+            }
+        });
+
+        // Memperlebar kolom Nama Toko 2x lipat dari kolom lainnya
+        worksheet.getColumn(2).width = worksheet.getColumn(2).width * 2; // Menambah lebar kolom Nama Toko 2x lipat
+
+        // Memperlebar kolom Nama Sales 3x lipat dari kolom lainnya
+        worksheet.getColumn(4).width = 35; // Nama Sales lebih lebar 3x lipat
+
+        // Atur response header untuk download file Excel
+        res.setHeader(
+            'Content-Type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        );
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename=Laporan_Penjualan_NPL_${month}_${year}.xlsx`
+        );
+
+        // Kirim file Excel sebagai response
+        await workbook.xlsx.write(res);
+        res.end();
+    } catch (error) {
+        console.error('Error generating Excel:', error);
+        res.status(500).send('Gagal membuat laporan Excel');
+    }
+}
+
 
 module.exports = {
     dataOrder, invoiceOrder, checkInvoice, processOrder, shipOrder,
     priceProduct, priceUpdate, stockProduct, updateStock,
     monitoringProgram, getProgramsByCategory,
     getProgramDetails, updateProgram, dataToko, getWilayah, riwayatTransaksi,
-    salesReport, topShop
+    salesReport, topShop, exportExcell
 };

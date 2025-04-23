@@ -28,7 +28,7 @@
     <div class="dashboard-container">
         <!-- Sidebar Menu -->
         <div class="dashboard-menu">
-            <a href="#" onclick="showContent('orders')">Status Pesanan</a>
+            <a href="#" onclick="showContent('orders')">Manajemen Pesanan</a>
             <a href="#" onclick="showContent('stock')">Manajemen Produk</a>
             <a href="#" onclick="showContent('reports')">Laporan Penjualan</a>
         </div>
@@ -206,16 +206,25 @@
                     <label for="year">Tahun:</label>
                     <select id="year"></select>
 
-                    <button id="filter-button">Tampilkan</button>
+                    <button id="exportExcel">Download </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footermarks">
+        <p>&copy; 2024 Nestlé Pure Life. All rights reserved.</p>
+    </footer>
 
-                <!-- Laporan Penjualan -->
-                <div class="report-orders">
-                    <h3>Laporan Penjualan</h3>
-                    <p>Memuat laporan...</p>
-                </div>
+    <script src="script/kepalacabang.js"></script>
+    <script src="script/app.js"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="process.env.CLIENT_KEY"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                <!-- Toko Terbaik -->
+</body>
+
+</html>
+
+<!-- Toko Terbaik
                 <div class="repost-best-shop">
                     <h3>Toko Terbaik</h3>
                     <table id="report-best-table" border="1">
@@ -234,11 +243,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Data riwayat transaksi akan ditambahkan di sini -->
+                            Data riwayat transaksi akan ditambahkan di sini
                         </tbody>
                     </table>
-                </div>
-                <div class="component">
+                </div> -->
+<!-- <div class="component">
                     <h3>Riwayat Pembelian Toko</h3>
                     <div class="filterRiwayat">
                         <label for="filterBulan">Bulan:</label>
@@ -260,18 +269,18 @@
                         <label for="filterTahun">Tahun:</label>
                         <select id="filterTahun">
                             <option value="" disabled selected>Pilih Tahun</option>
-                            <!-- Tambahkan tahun secara dinamis -->
+                            Tambahkan tahun secara dinamis
                         </select>
                         <label for="filterWilayah">Wilayah:</label>
                         <select id="filterWilayah">
                             <option value="" disabled selected>Pilih Wilayah</option>
-                            <!-- Wilayah akan ditambahkan secara dinamis -->
+                            Wilayah akan ditambahkan secara dinamis
                         </select>
                         <label for="filterNamaToko">Nama Toko:</label>
                         <input type="text" id="filterNamaToko" placeholder="Ketik nama toko...">
                         <button id="filterButton">Filter</button>
-                    </div>
-                    <table id="riwayatTable" border="1">
+                    </div> -->
+<!-- <table id="riwayatTable" border="1">
                         <thead>
                             <tr>
                                 <th rowspan="2">Nama Toko</th>
@@ -288,22 +297,7 @@
                             </tr>
                         </thead>
                         <tbody id="riwayatTableBody">
-                            <!-- Data riwayat transaksi akan ditambahkan di sini -->
+                            Data riwayat transaksi akan ditambahkan di sini
                         </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <footer class="footermarks">
-        <p>&copy; 2024 Nestlé Pure Life. All rights reserved.</p>
-    </footer>
-
-    <script src="script/kepalacabang.js"></script>
-    <script src="script/app.js"></script>
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="process.env.CLIENT_KEY"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-</body>
-
-</html>
+                    </table> -->
+<!-- </div> -->

@@ -8,7 +8,7 @@ const { dataOrder, invoiceOrder, processOrder, shipOrder,
     salesReport,
     topShop, 
     checkInvoice,
-    getWilayah} = require('../controllers/adminController');
+    getWilayah, exportExcell} = require('../controllers/adminController');
 
 //manajemen pemesanan
 router.get('/orders', dataOrder);
@@ -37,6 +37,7 @@ router.get('/riwayat-penjualan', riwayatTransaksi);
 //laporan penjualan
 router.get('/sales-report', salesReport);
 router.get('/top-shops', topShop);
+router.get('/export-excel', exportExcell);
 
 
 module.exports = router;
