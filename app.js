@@ -7,6 +7,9 @@ const swaggerDocument = require('./swagger.json');
 const path = require('path');
 const cors = require('cors');
 
+// Tambahkan ini untuk mengaktifkan scheduler
+require('./jobs/orderScheduler');
+
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');

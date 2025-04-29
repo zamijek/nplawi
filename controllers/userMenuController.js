@@ -1,6 +1,5 @@
 const db = require('../config/db');  // Import koneksi database
 const midtransClient = require('midtrans-client');
-const schedule = require('node-schedule');
 require('dotenv').config();
 
 // Inisialisasi Snap Client
@@ -607,62 +606,6 @@ function orderHistory(req, res) {
         res.json(results);
     });
 }
-
-// Scheduler: Periksa setiap hari pada pukul 00:00
-schedule.scheduleJob('0 0 * * *', async () => {
-    console.log('Menjalankan validasi otomatis pesanan...');
-
-    try {
-        // Ambil pesanan yang statusnya masih "Menunggu Pembayaran" atau "Dikirim" dan berusia lebih dari 2 hari
-        const query = `
-            SELECT order_id, status_id 
-            FROM orders 
-            WHERE status_id IN (1, 4) AND TIMESTAMPDIFF(DAY, order_date, NOW()) >= 2
-        `;
-        const [orders] = await db.promise().query(query);
-
-        if (orders.length > 0) {
-            const completeOrders = [];
-            const cancelOrders = [];
-
-            orders.forEach(order => {
-                // Logika: Jika status "Menunggu Pembayaran" -> otomatis batal,
-                // Jika status "Dikirim" -> otomatis selesai
-                if (order.status_id === 1) {
-                    cancelOrders.push(order.order_id);
-                } else if (order.status_id === 4) {
-                    completeOrders.push(order.order_id);
-                }
-            });
-
-            // Update status pesanan yang otomatis batal
-            if (cancelOrders.length > 0) {
-                const cancelQuery = `
-                    UPDATE orders 
-                    SET status_id = 6 
-                    WHERE order_id IN (?)
-                `;
-                await db.promise().query(cancelQuery, [cancelOrders]);
-                console.log(`Pesanan dibatalkan: ${cancelOrders.join(', ')}`);
-            }
-
-            // Update status pesanan yang otomatis selesai
-            if (completeOrders.length > 0) {
-                const completeQuery = `
-                    UPDATE orders 
-                    SET status_id = 5 
-                    WHERE order_id IN (?)
-                `;
-                await db.promise().query(completeQuery, [completeOrders]);
-                console.log(`Pesanan selesai: ${completeOrders.join(', ')}`);
-            }
-        } else {
-            console.log('Tidak ada pesanan yang perlu diperbarui.');
-        }
-    } catch (error) {
-        console.error('Error dalam validasi otomatis:', error);
-    }
-});
 
 module.exports = {
     getUserId, getProducts,
