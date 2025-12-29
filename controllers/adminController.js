@@ -21,29 +21,21 @@ const queryPromise = (query, params) => {
 // Express.js route for fetching orders sorted by FCFS
 function dataOrder(req, res) {
     const query = `
-      SELECT 
-    o.order_id,
-    o.nama_toko,
-    o.order_date,
-    os.status_name,
+    SELECT o.order_id, o.nama_toko, o.order_date, os.status_name,
     SUM(oi.quantity) AS total_quantity,
     SUM(CASE WHEN p.produk_id = 1 THEN oi.quantity ELSE 0 END) AS quantity_330ml,
     SUM(CASE WHEN p.produk_id = 2 THEN oi.quantity ELSE 0 END) AS quantity_600ml,
     SUM(CASE WHEN p.produk_id = 3 THEN oi.quantity ELSE 0 END) AS quantity_1500ml
-FROM orders o
-JOIN order_items oi ON o.order_id = oi.order_id
-JOIN produk p ON oi.product_id = p.produk_id
-JOIN order_status os ON o.status_id = os.status_id
-WHERE os.status_name NOT IN ('Selesai', 'Dibatalkan') -- Filter status 'Selesai' dan 'Dibatalkan'
-GROUP BY 
-    o.order_id, 
-    o.nama_toko, 
-    o.order_date, 
-    os.status_name
-ORDER BY 
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN produk p ON oi.product_id = p.produk_id
+    JOIN order_status os ON o.status_id = os.status_id
+    WHERE os.status_name NOT IN ('Selesai', 'Dibatalkan') -- Filter status 'Selesai' dan 'Dibatalkan'
+    GROUP BY o.order_id, o.nama_toko, o.order_date, os.status_name
+    ORDER BY 
     CASE 
-        WHEN os.status_name = 'Pesanan telah dibayar' THEN 1 -- Prioritaskan status ini
-        ELSE 2 -- Status lainnya diurutkan setelahnya
+    WHEN os.status_name = 'Pesanan telah dibayar' THEN 1 -- Prioritaskan status ini
+    ELSE 2 -- Status lainnya diurutkan setelahnya
     END, 
     o.order_date ASC; 
     `;
@@ -525,10 +517,10 @@ async function getWilayah(req, res) {
 async function riwayatTransaksi(req, res) {
     const { bulan, tahun, namaToko, wilayah } = req.query;
 
-    if (!bulan || !tahun) {
+    if (!tahun) {
         return res.status(400).json({
             success: false,
-            message: 'Bulan dan tahun harus diisi!',
+            message: 'Tahun harus diisi!',
         });
     }
 
@@ -548,26 +540,34 @@ async function riwayatTransaksi(req, res) {
             JOIN produk p ON oi.product_id = p.produk_id
             JOIN users u ON o.customer_id = u.customer_id
             JOIN order_status os ON o.status_id = os.status_id
-            WHERE MONTH(o.order_date) = ?
-            AND YEAR(o.order_date) = ?
-            AND o.status_id = 5
+            WHERE YEAR(o.order_date) = ?
+              AND o.status_id = 5
         `;
 
-        const params = [bulan, tahun];
+        const params = [tahun];
 
-        // Tambahkan filter nama toko jika ada
+        // 🔹 Filter bulan (jika bukan "all")
+        if (bulan && bulan !== 'all') {
+            query += ' AND MONTH(o.order_date) = ?';
+            params.push(bulan);
+        }
+
+        // 🔹 Filter nama toko
         if (namaToko) {
             query += ' AND u.nama_toko LIKE ?';
             params.push(`%${namaToko}%`);
         }
 
-        // Tambahkan filter wilayah jika ada
+        // 🔹 Filter wilayah
         if (wilayah) {
             query += ' AND u.wilayah_toko = ?';
             params.push(wilayah);
         }
 
-        query += ' GROUP BY o.order_id ORDER BY o.order_date DESC';
+        query += `
+            GROUP BY o.order_id
+            ORDER BY o.order_date DESC
+        `;
 
         const [rows] = await db.promise().query(query, params);
 
@@ -575,6 +575,7 @@ async function riwayatTransaksi(req, res) {
             success: true,
             data: rows,
         });
+
     } catch (error) {
         console.error('Error fetching transaction history:', error);
         res.status(500).json({
@@ -584,12 +585,13 @@ async function riwayatTransaksi(req, res) {
     }
 }
 
+
 //REPORT PENJUALAN==================================
 async function salesReport(req, res) {
     try {
         const { month, year } = req.query;
 
-        const query = `
+        let query = `
             SELECT 
                 COUNT(DISTINCT o.order_id) AS total_transaksi,
                 SUM(oi.quantity) AS total_unit_terjual,
@@ -597,32 +599,36 @@ async function salesReport(req, res) {
                 SUM(CASE WHEN p.ukuran_produk = '600ml' THEN oi.quantity ELSE 0 END) AS total_600ml,
                 SUM(CASE WHEN p.ukuran_produk = '1500ml' THEN oi.quantity ELSE 0 END) AS total_1500ml,
                 SUM(o.final_amount) AS total_penjualan
-            FROM 
-                orders o
-            JOIN 
-                order_items oi ON o.order_id = oi.order_id
-            JOIN 
-                produk p ON oi.product_id = p.produk_id
-            WHERE 
-                o.status_id = 5 
-                AND MONTH(o.order_date) = ? 
-                AND YEAR(o.order_date) = ?
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN produk p ON oi.product_id = p.produk_id
+            WHERE o.status_id = 5
+              AND YEAR(o.order_date) = ?
         `;
 
-        const [results] = await db.promise().query(query, [month, year]);
+        const params = [year];
+
+        if (month !== 'all') {
+            query += ` AND MONTH(o.order_date) = ?`;
+            params.push(month);
+        }
+
+        const [results] = await db.promise().query(query, params);
         res.json(results[0]);
+
     } catch (err) {
         console.error('Error fetching sales report:', err);
         res.status(500).json({ message: 'Failed to fetch sales report.' });
     }
 }
 
+
 //TOKO TERBAIK==================
 async function topShop(req, res) {
     try {
         const { month, year } = req.query;
 
-        const query = `
+        let query = `
             SELECT 
                 o.nama_toko,
                 o.nama_sales,
@@ -631,62 +637,81 @@ async function topShop(req, res) {
                 SUM(CASE WHEN p.produk_id = 2 THEN oi.quantity ELSE 0 END) AS quantity_600ml,
                 SUM(CASE WHEN p.produk_id = 3 THEN oi.quantity ELSE 0 END) AS quantity_1500ml,
                 SUM(oi.quantity) AS total_quantity
-            FROM 
-                orders o
-            JOIN 
-                order_items oi ON o.order_id = oi.order_id
-            JOIN 
-                produk p ON oi.product_id = p.produk_id
-            WHERE 
-                MONTH(o.order_date) = ? 
-                AND YEAR(o.order_date) = ?
-                AND o.status_id = 5
-            GROUP BY 
-                o.nama_toko, o.nama_sales, o.wilayah_toko
-            ORDER BY 
-                total_quantity DESC
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN produk p ON oi.product_id = p.produk_id
+            WHERE o.status_id = 5
+              AND YEAR(o.order_date) = ?
+        `;
+
+        const params = [year];
+
+        if (month !== 'all') {
+            query += ` AND MONTH(o.order_date) = ?`;
+            params.push(month);
+        }
+
+        query += `
+            GROUP BY o.nama_toko, o.nama_sales, o.wilayah_toko
+            ORDER BY total_quantity DESC
             LIMIT 10
         `;
 
-        const [rows] = await db.promise().query(query, [month, year]);
+        const [rows] = await db.promise().query(query, params);
         res.json(rows);
+
     } catch (err) {
         console.error('Error fetching best shop data:', err);
         res.status(500).json({ message: 'Failed to fetch top shops.' });
     }
 }
 
+
 // EXPORT EXCELL
 async function exportExcell(req, res) {
     try {
         const { month, year } = req.query;
 
-        if (!month || !year) {
-            return res.status(400).json({ error: 'Bulan dan tahun harus dipilih' });
-        }
-
-        // Query untuk mengambil data dari database, menambahkan order_id
-        const [salesData] = await db.promise().query(`
-            SELECT o.order_id, o.nama_toko, o.wilayah_toko, o.nama_sales, 
-                   DATE_FORMAT(o.order_date, '%Y-%m-%d') AS tanggal,
-                   SUM(CASE WHEN p.ukuran_produk = '330ml' THEN oi.quantity ELSE 0 END) AS ukuran_330ml,
-                   SUM(CASE WHEN p.ukuran_produk = '600ml' THEN oi.quantity ELSE 0 END) AS ukuran_600ml,
-                   SUM(CASE WHEN p.ukuran_produk = '1500ml' THEN oi.quantity ELSE 0 END) AS ukuran_1500ml,
-                   SUM(oi.quantity) AS jumlah_pesanan, 
-                   SUM(oi.total) AS jumlah_harga,
-                   s.status_name AS status
+        let query = `
+            SELECT 
+                o.order_id, 
+                o.nama_toko, 
+                o.wilayah_toko, 
+                o.nama_sales, 
+                DATE_FORMAT(o.order_date, '%Y-%m-%d') AS tanggal,
+                SUM(CASE WHEN p.ukuran_produk = '330ml' THEN oi.quantity ELSE 0 END) AS ukuran_330ml,
+                SUM(CASE WHEN p.ukuran_produk = '600ml' THEN oi.quantity ELSE 0 END) AS ukuran_600ml,
+                SUM(CASE WHEN p.ukuran_produk = '1500ml' THEN oi.quantity ELSE 0 END) AS ukuran_1500ml,
+                SUM(oi.quantity) AS jumlah_pesanan, 
+                SUM(oi.total) AS jumlah_harga,
+                s.status_name AS status
             FROM orders o
             JOIN order_items oi ON o.order_id = oi.order_id
             JOIN produk p ON oi.product_id = p.produk_id
             JOIN order_status s ON o.status_id = s.status_id
-            WHERE MONTH(o.order_date) = ? AND YEAR(o.order_date) = ?
-            GROUP BY o.order_id, o.nama_toko, o.wilayah_toko, o.nama_sales, o.order_date, s.status_name
+            WHERE YEAR(o.order_date) = ?
+        `;
+
+        const params = [year];
+
+        if (month !== 'all') {
+            query += ` AND MONTH(o.order_date) = ?`;
+            params.push(month);
+        }
+
+        query += `
+            GROUP BY o.order_id, o.nama_toko, o.wilayah_toko, 
+                     o.nama_sales, o.order_date, s.status_name
             ORDER BY o.order_date ASC
-        `, [month, year]);
+        `;
+
+        const [salesData] = await db.promise().query(query, params);
 
         if (salesData.length === 0) {
-            return res.status(404).json({ error: 'Tidak ada data untuk bulan dan tahun ini' });
+            return res.status(404).json({ error: 'Tidak ada data' });
         }
+
+        // ================= EXCEL (LANJUTKAN KODE KAMU TANPA DIUBAH) =================
 
         // Buat workbook dan worksheet
         const workbook = new ExcelJS.Workbook();
