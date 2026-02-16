@@ -41,6 +41,7 @@ app.use('/images', express.static('Website AWI NPL/gambar'));
 app.get('/reset-password', (req, res) => {
     res.sendFile(path.join(__dirname, 'Website AWI NPL', 'resetpassword.html'));
 });
+app.use('/uploads', express.static('hasilUpload/uploads'));
 
 // Middleware untuk menangani error
 app.use(errorHandler);

@@ -40,6 +40,8 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
                     window.location.href = 'admin.html';
                 } else if (data.role === 'kepalaCabang') {
                     window.location.href = 'kepalacabang.html';
+                } else if (data.role === 'kurir') {
+                    window.location.href = 'kurir.html';
                 } else {
                     window.location.href = 'user.html';
                 }

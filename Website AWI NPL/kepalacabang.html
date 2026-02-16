@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nestlé Pure Life | Kepala Cabang Dashboard</title>
-    <link rel="stylesheet" href="styles3.css">
+    <link rel="stylesheet" href="style/kepalacabang.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
@@ -28,9 +29,20 @@
     <div class="dashboard-container">
         <!-- Sidebar Menu -->
         <div class="dashboard-menu">
-            <a href="#" onclick="showContent('orders')">Manajemen Pesanan</a>
-            <a href="#" onclick="showContent('stock')">Manajemen Produk</a>
-            <a href="#" onclick="showContent('reports')">Laporan Penjualan</a>
+            <a href="#" onclick="showContent('orders')">
+                <i class="fa-solid fa-receipt menu-icon"></i>
+                Manajemen Pesanan
+            </a>
+
+            <a href="#" onclick="showContent('stock')">
+                <i class="fa-solid fa-box-open menu-icon"></i>
+                Manajemen Produk
+            </a>
+
+            <a href="#" onclick="showContent('reports')">
+                <i class="fa-solid fa-chart-line menu-icon"></i>
+                Laporan Penjualan
+            </a>
         </div>
         <!-- Main Content Area -->
         <div class="dashboard-content">
@@ -38,7 +50,7 @@
             <div id="orders" class="content-section">
                 <!-- Daftar Pesanan -->
                 <div class="orders-container">
-                    <div class="orders-container">
+                    <div class="table-wrapper">
                         <h2>Status Pemesanan</h2>
                         <table class="orders-table" border="1">
                             <thead>
@@ -83,19 +95,19 @@
                     <div class="price-setting">
                         <label for="priceItem1">Harga Nestlé Pure Life 330ml:</label>
                         <input id="priceItem1" type="number" placeholder="Harga per Karton" data-product-id="1">
-                        <span id="previousPriceItem1" class="previous-price">(Sebelumnya: Memuat harga...)</span>
+                        <span id="previousPriceItem1" class="previous-price">(Saat ini Memuat harga...)</span>
                     </div>
 
                     <div class="price-setting">
                         <label for="priceItem2">Harga Nestlé Pure Life 600ml:</label>
                         <input id="priceItem2" type="number" placeholder="Harga per Karton" data-product-id="2">
-                        <span id="previousPriceItem2" class="previous-price">(Sebelumnya: Memuat harga...)</span>
+                        <span id="previousPriceItem2" class="previous-price">(Saat ini: Memuat harga...)</span>
                     </div>
 
                     <div class="price-setting">
                         <label for="priceItem3">Harga Nestlé Pure Life 1500ml:</label>
                         <input id="priceItem3" type="number" placeholder="Harga per Karton" data-product-id="3">
-                        <span id="previousPriceItem3" class="previous-price">(Sebelumnya: Memuat harga...)</span>
+                        <span id="previousPriceItem3" class="previous-price">(Saat ini: Memuat harga...)</span>
                     </div>
                     <button id="updatePrices">Update Harga</button>
                 </div>
@@ -186,6 +198,7 @@
             <!-- Laporan Penjualan -->
             <div id="reports" class="content-section">
                 <h2>Analisis dan Laporan Penjualan Bulanan</h2>
+
                 <div id="filters">
                     <label for="month">Bulan:</label>
                     <select id="month">
@@ -207,8 +220,38 @@
                     <label for="year">Tahun:</label>
                     <select id="year"></select>
 
-                    <button id="exportExcel">Download </button>
+                    <!-- FILTER STATUS BARU -->
+                    <label for="status">Status:</label>
+                    <select id="status">
+                        <option value="all">Semua</option>
+                        <option value="Diproses">Diproses</option>
+                        <option value="Dikirim">Dikirim</option>
+                        <option value="Terkirim">Terkirim</option>
+                        <option value="Selesai">Selesai</option>
+                        <option value="Dibatalkan">Dibatalkan</option>
+                    </select>
+
+                    <!-- BUTTON BARU -->
+                    <button id="viewReport">Tampilkan</button>
+                    <button id="exportExcel">Download</button>
                 </div>
+
+                <!-- TABEL PREVIEW -->
+                <table border="1" id="reportTable" style="margin-top:20px;">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Nama Toko</th>
+                            <th>Wilayah</th>
+                            <th>Sales</th>
+                            <th>Tanggal</th>
+                            <th>Total Pesanan</th>
+                            <th>Total Harga</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportBody"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -225,80 +268,3 @@
 
 </html>
 
-<!-- Toko Terbaik
-                <div class="repost-best-shop">
-                    <h3>Toko Terbaik</h3>
-                    <table id="report-best-table" border="1">
-                        <thead>
-                            <tr>
-                                <th rowspan="2">Nama Toko</th>
-                                <th colspan="3">Ukuran</th>
-                                <th rowspan="2">Jumlah Pesanan</th>
-                                <th rowspan="2">Nama Sales</th>
-                                <th rowspan="2">Area</th>
-                            </tr>
-                            <tr>
-                                <th>330ml</th>
-                                <th>600ml</th>
-                                <th>1500ml</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            Data riwayat transaksi akan ditambahkan di sini
-                        </tbody>
-                    </table>
-                </div> -->
-<!-- <div class="component">
-                    <h3>Riwayat Pembelian Toko</h3>
-                    <div class="filterRiwayat">
-                        <label for="filterBulan">Bulan:</label>
-                        <select id="filterBulan">
-                            <option value="" disabled selected>Pilih Bulan</option>
-                            <option value="1">Januari</option>
-                            <option value="2">Februari</option>
-                            <option value="3">Maret</option>
-                            <option value="4">April</option>
-                            <option value="5">Mei</option>
-                            <option value="6">Juni</option>
-                            <option value="7">Juli</option>
-                            <option value="8">Agustus</option>
-                            <option value="9">September</option>
-                            <option value="10">Oktober</option>
-                            <option value="11">November</option>
-                            <option value="12">Desember</option>
-                        </select>
-                        <label for="filterTahun">Tahun:</label>
-                        <select id="filterTahun">
-                            <option value="" disabled selected>Pilih Tahun</option>
-                            Tambahkan tahun secara dinamis
-                        </select>
-                        <label for="filterWilayah">Wilayah:</label>
-                        <select id="filterWilayah">
-                            <option value="" disabled selected>Pilih Wilayah</option>
-                            Wilayah akan ditambahkan secara dinamis
-                        </select>
-                        <label for="filterNamaToko">Nama Toko:</label>
-                        <input type="text" id="filterNamaToko" placeholder="Ketik nama toko...">
-                        <button id="filterButton">Filter</button>
-                    </div> -->
-<!-- <table id="riwayatTable" border="1">
-                        <thead>
-                            <tr>
-                                <th rowspan="2">Nama Toko</th>
-                                <th rowspan="2">Tanggal</th>
-                                <th colspan="3">Ukuran</th>
-                                <th rowspan="2">Jumlah Pesanan</th>
-                                <th rowspan="2">Jumlah Harga</th>
-                                <th rowspan="2">Status</th>
-                            </tr>
-                            <tr>
-                                <th>330ml</th>
-                                <th>600ml</th>
-                                <th>1500ml</th>
-                            </tr>
-                        </thead>
-                        <tbody id="riwayatTableBody">
-                            Data riwayat transaksi akan ditambahkan di sini
-                        </tbody>
-                    </table> -->
-<!-- </div> -->

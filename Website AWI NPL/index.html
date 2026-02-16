@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nestlé Pure Life | Ga Dingin Tetap Segar...</title>
-  <link rel="stylesheet" href="styles1.css">
+  <link rel="stylesheet" href="style/index.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
@@ -41,7 +41,7 @@
       <p>Website ini dirancang untuk Anda agar mempermudah proses pemesanan dan mendapatkan bonus terbaik bagi usaha
         Anda.</p>
       <div class="button-tertarik">
-        <button id="buy-now"><a href="user.html" id="buy-link">Pesan Sekarang</a></button>
+        <button id="buy-now">Pesan Sekarang</a></button>
       </div>
     </div>
     <div class="buttonhome" id="buttonhome">
@@ -62,5 +62,17 @@
   <script src="script/index.js"></script>
   <script src="script/app.js"></script>
 </body>
+
+<script>
+document.getElementById('buy-now').addEventListener('click', () => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        window.location.href = 'user.html';
+    } else {
+        window.location.href = 'login.html';
+    }
+});
+</script>
 
 </html>

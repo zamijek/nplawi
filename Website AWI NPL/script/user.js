@@ -118,8 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <img src="${product.gambar}" alt="${product.nama_produk}">
                     </div>
                     <div class="harga-produk">
-                        <h1>${product.nama_produk}</h1>
-                        <p>Rp. ${product.harga.toLocaleString()}</p>
+                        <h4>${product.nama_produk}</h4>
+                        <p>${formatRupiah(product.harga)}</p>
                         <label>Jumlah Karton:</label>
                         <input type="number" min="0" value="0"
                             onchange="updateCart(${product.produk_id}, '${product.nama_produk}', ${product.harga}, this.value)">
@@ -131,6 +131,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayCart(); // Menampilkan keranjang setelah halaman dimuat
 });
+
+//Format Rupiah
+function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(angka);
+}
 
 // Fungsi untuk memperbarui keranjang
 function updateCart(produk_id, nama_produk, harga, quantity) {
@@ -174,7 +184,7 @@ function displayCart() {
         if (item.quantity > 0) {
             const productTotal = item.harga * item.quantity;
             const listItem = document.createElement('li');
-            listItem.innerHTML = `${item.nama_produk} - ${item.quantity} karton - Rp ${productTotal.toLocaleString()}`;
+            listItem.innerHTML = `${item.nama_produk} - ${item.quantity} karton - ${formatRupiah(productTotal)}`;
             cartItemsList.appendChild(listItem);
 
             total += productTotal;
@@ -189,7 +199,7 @@ function displayCart() {
 
     // Update elemen tampilan
     totalCartons.textContent = cartons;
-    totalPrice.textContent = total.toLocaleString();
+    totalPrice.textContent = formatRupiah(total);
     discountElement.textContent = `Bonus: ${bonus} karton 600ml`; // Tampilkan bonus karton
 
     // Tombol checkout tetap aktif, tetapi validasi dilakukan di checkout()
@@ -342,11 +352,6 @@ async function processCheckout(userId, token, note) {
             confirmButtonText: 'OK',
         });
     }
-}
-
-// Fungsi Format Rupiah
-function formatRupiah(amount) {
-    return `Rp ${amount.toLocaleString('id-ID')}`;
 }
 
 // Cancel orderan
@@ -654,12 +659,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 orderTable.appendChild(row);
             });
         })
-        .catch(err => Swal.fire({
-            icon: 'error',
-            title: 'Gagal Mengambil Pesanan',
-            text: `Terjadi kesalahan: ${err}`,
-            confirmButtonText: 'OK',
-        }));
+        // .catch(err => Swal.fire({
+        //     icon: 'error',
+        //     title: 'Gagal Mengambil Pesanan',
+        //     text: `Terjadi kesalahan: ${err}`,
+        //     confirmButtonText: 'OK',
+        // }));
 
     // Handle "Select All" checkbox
     selectAllCheckbox.addEventListener('change', () => {
@@ -845,10 +850,10 @@ function loadOrderHistory(userId) {
                 row.innerHTML = `
                 <td>${new Date(order.order_date).toLocaleDateString()}</td>
                 <td>${order.order_id}</td>
-                <td>${order.quantity_330ml}</td>
-                <td>${order.quantity_600ml}</td>
-                <td>${order.quantity_1500ml}</td>
-                <td>${order.total_quantity}</td>
+                <td>${order.quantity_330ml ?? 0}</td>
+                <td>${order.quantity_600ml ?? 0}</td>
+                <td>${order.quantity_1500ml ?? 0}</td>
+                <td>${order.total_quantity ?? 0}</td>
                 <td>Rp ${order.final_amount.toLocaleString()}</td>
                 <td>${order.status_name}</td>
             `;
@@ -856,10 +861,6 @@ function loadOrderHistory(userId) {
                 orderHistoryBody.appendChild(row);
             });
         })
-        .catch(error => {
-            console.error('Error fetching order history:', error);
-            alert('Gagal memuat riwayat pemesanan.');
-        });
 }
 
 

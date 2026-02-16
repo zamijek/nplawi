@@ -1,0 +1,254 @@
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* ================= BODY ================= */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  background:
+    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+    url("../gambar/Banner-NPL-Akasha.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  color: #333;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8%;
+  background: #0077c8;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 70px;
+}
+
+.logo img {
+  height: 60px;
+  width: auto;
+  padding-top: 7px;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.listmenu {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.listmenu li a {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.listmenu li a:hover {
+  color: #ffd700;
+}
+
+.login-button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 25px;
+  background: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-button a {
+  text-decoration: none;
+  color: #0077c8;
+  font-weight: 600;
+}
+
+.login-button:hover {
+  background: #ffd700;
+}
+
+/* ================= DAFTAR SECTION ================= */
+.daftar-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 60px 8%;
+}
+
+/* ================= FORM CARD ================= */
+.form-daftar {
+  background: white;
+  padding: 45px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 650px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.form-daftar h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #0077c8;
+}
+
+/* ================= LABEL ================= */
+.form-daftar label {
+  display: block;
+  margin-bottom: 6px;
+  margin-top: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ================= INPUT ================= */
+.form-daftar input,
+.form-daftar select,
+.form-daftar textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.form-daftar textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.form-daftar input:focus,
+.form-daftar select:focus,
+.form-daftar textarea:focus {
+  border-color: #0077c8;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0,119,200,0.4);
+}
+
+/* ================= BUTTON ================= */
+.form-daftar button {
+  width: 100%;
+  margin-top: 25px;
+  padding: 14px;
+  background: #0077c8;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.form-daftar button:hover {
+  background: #005fa3;
+  transform: scale(1.02);
+}
+
+/* ================= LINK ================= */
+.form-daftar p {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+}
+
+.form-daftar p a {
+  color: #0077c8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.form-daftar p a:hover {
+  text-decoration: underline;
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= FOOTER ================= */
+.footermarks {
+  text-align: center;
+  padding: 20px;
+  background: #0077c8;
+  color: white;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px) {
+  .form-daftar {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    height: auto;
+    padding: 15px;
+  }
+
+  .listmenu {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .daftar-section {
+    padding: 40px 5%;
+  }
+
+  .form-daftar {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .form-daftar {
+    padding: 20px;
+  }
+
+  .form-daftar h2 {
+    font-size: 18px;
+  }
+
+  .form-daftar button {
+    font-size: 14px;
+  }
+
+  .footermarks {
+    font-size: 12px;
+  }
+}

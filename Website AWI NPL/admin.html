@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nestlé Pure Life | Admin Dashboard</title>
-    <link rel="stylesheet" href="styles3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style/admin.css">
 </head>
 
 <body>
@@ -28,11 +29,22 @@
     <div class="dashboard-container">
         <!-- Sidebar Menu -->
         <div class="dashboard-menu">
-            <a href="#" onclick="showContent('orders')">Manajemen Pesanan</a>
-            <!-- <a href="#" onclick="showContent('stock')">Manajemen Produk</a> -->
-            <a href="#" onclick="showContent('promos')">Program NPL</a>
-            <a href="#" onclick="showContent('users')">Manajemen Toko</a>
-            <a href="#" onclick="showContent('reports')">Laporan Penjualan</a>
+           <a href="#" onclick="showContent('orders')">
+                <i class="fa-solid fa-receipt menu-icon"></i>
+                Manajemen Pesanan
+            </a>
+            <a href="#" onclick="showContent('promos')">
+                <i class="fa-solid fa-bullseye menu-icon"></i>
+                Program NPL
+            </a>
+            <a href="#" onclick="showContent('users')">
+                <i class="fa-solid fa-store menu-icon"></i>
+                Manajemen Toko
+            </a>
+            <a href="#" onclick="showContent('reports')">
+                <i class="fa-solid fa-chart-line menu-icon"></i>
+                Laporan Penjualan
+            </a>
         </div>
         <!-- Main Content Area -->
         <div class="dashboard-content">
@@ -170,13 +182,16 @@
                 <!-- Pengaturan Program -->
                 <h2>Pengaturan Program</h2>
                 <div class="promo-set-container">
-                    <div class="form-group">
-                        <h3>Pilih Kategori :</h3>
-                        <select name="categoryProgram2" id="categoryProgram2" required>
-                            <option value="" disabled selected>Pilih kategori</option>
-                            <option value="NaturaReguler">Natura Reguler</option>
-                            <option value="NaturaGromin">Natura Gromin</option>
-                        </select>
+                    <div class="promo-filter-row">
+                        <div class="form-group">
+                            <h3>Pilih Kategori :</h3>
+                            <select name="categoryProgram2" id="categoryProgram2" required>
+                                <option value="" disabled selected>Pilih kategori</option>
+                                <option value="NaturaReguler">Natura Reguler</option>
+                                <option value="NaturaGromin">Natura Gromin</option>
+                            </select>
+                        </div>
+
                         <div class="form-group">
                             <h3>Pilih Program :</h3>
                             <select name="programName" id="programName" required disabled>
@@ -335,33 +350,38 @@
                 </div>
 
                 <!-- Laporan Penjualan -->
-                <div class="report-orders">
+                <div class="report-card">
                     <h3>Laporan Penjualan</h3>
-                    <p>Memuat laporan...</p>
+                    <div class="report-orders">
+                        <p>Memuat laporan...</p>
+                    </div>
                 </div>
 
                 <!-- Toko Terbaik -->
-                <div class="repost-best-shop">
+                <div class="report-card">
                     <h3>Toko Terbaik</h3>
-                    <table id="report-best-table" border="1">
-                        <thead>
-                            <tr>
-                                <th rowspan="2">Nama Toko</th>
-                                <th colspan="3">Ukuran</th>
-                                <th rowspan="2">Jumlah Pesanan</th>
-                                <th rowspan="2">Nama Sales</th>
-                                <th rowspan="2">Area</th>
-                            </tr>
-                            <tr>
-                                <th>330ml</th>
-                                <th>600ml</th>
-                                <th>1500ml</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Data riwayat transaksi akan ditambahkan di sini -->
-                        </tbody>
-                    </table>
+                    <div class="table-wrapper">
+                        <table id="report-best-table" border="1">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">No</th>
+                                    <th rowspan="2">Nama Toko</th>
+                                    <th colspan="3">Ukuran</th>
+                                    <th rowspan="2">Jumlah Pesanan</th>
+                                    <th rowspan="2">Nama Sales</th>
+                                    <th rowspan="2">Area</th>
+                                </tr>
+                                <tr>
+                                    <th>330ml</th>
+                                    <th>600ml</th>
+                                    <th>1500ml</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data riwayat transaksi akan ditambahkan di sini -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

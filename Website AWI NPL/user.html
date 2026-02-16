@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nestlé Pure Life | Dashboard</title>
-    <link rel="stylesheet" href="styles3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style/user.css">
 </head>
 
 <body>
@@ -29,12 +30,23 @@
     <div class="dashboard-container">
         <!-- Sidebar Menu -->
         <div class="dashboard-menu">
-            <a href="#" onclick="showContent('order')">Buat Pemesanan</a>
-            <a href="#" onclick="showContent('stok')">Status Pemesanan</a>
-            <a href="#" onclick="showContent('promo')">Program NPL</a>
-            <a href="#" onclick="showContent('akun')">Informasi Akun</a>
+            <a href="#" onclick="showContent('order')">
+                <i class="fa-solid fa-cart-plus menu-icon"></i>
+                Buat Pemesanan
+            </a>
+            <a href="#" onclick="showContent('stok')">
+                <i class="fa-solid fa-truck-fast menu-icon"></i>
+                Status Pemesanan
+            </a>
+            <a href="#" onclick="showContent('promo')">
+                <i class="fa-solid fa-gift menu-icon"></i>
+                Program NPL
+            </a>
+            <a href="#" onclick="showContent('akun')">
+                <i class="fa-solid fa-user menu-icon"></i>
+                Informasi Akun
+            </a>
         </div>
-
         <!-- Content Section -->
         <div class="dashboard-content">
             <div class="image-container">
@@ -57,7 +69,7 @@
                     <textarea id="checkout-note" placeholder="Tulis catatan untuk pesanan Anda (opsional)"></textarea>
                     <div class="cart-button">
                         <button id="checkout-button" onclick="checkout()" disabled>Checkout</button>
-                        <button id="clear-cart-button" onclick="clearCart()">Clear Cart</button>
+                        <button id="clear-cart-button" class="btn-danger" onclick="clearCart()">Clear Cart</button>
                     </div>
                 </div>
             </div>
@@ -71,7 +83,7 @@
                     <p>Diskon: <span id="discount1"></span></p>
                     <p>Total Harga: <span id="final-amount"></span></p>
                     <button onclick="proceedPayment()">Lanjutkan Pembayaran</button>
-                    <button id="cancel-order-btn">Batalkan Pesanan</button>
+                    <button id="cancel-order-btn" class="btn-danger">Batalkan Pesanan</button>
                 </div>
                 <table class="orderStatusTable" border="1">
                     <thead>
@@ -98,7 +110,7 @@
                 </table>
                 <div class="bulk-actions">
                     <button onclick="completeSelectedOrders()">Selesai</button>
-                    <button id="cancelSelectedOrders" onclick="cancelSelectedOrders()">Batal</button>
+                    <button id="cancelSelectedOrders" class="btn-danger" onclick="cancelSelectedOrders()">Batal</button>
                 </div>
                 
                 <!-- Riwayat Pemesanan -->
@@ -140,7 +152,6 @@
                 <a href="PROMO NPL 40+2 DAN PROGRAM NPL.pdf" target="_blank">📖 Baca PDF</a>
                 <p>Ayo daftarkan usaha Anda pada Program Nestlé Pure Life, nikmati bonus dan dapatkan cashbacknya !</p>
                 <p>Belum daftar program ? Daftarkan usaha Anda pada Program Nestlé Pure Life di bawah ini !</p>
-                <a href="#" id="showProgramSelection" onclick="showProgramOptions()">Pilih Program Nestlé Pure Life</a>
 
                 <div id="programOptions" class="program-options">
                     <form id="programSelectionForm">
@@ -151,14 +162,14 @@
                                 <option value="NaturaReguler">Natura Reguler</option>
                                 <option value="NaturaGromin">Natura Gromin</option>
                             </select>
-                        </div><br>
+                        </div>
                         <div class="form-group">
                             <h3>Pilih Program yang Diinginkan:</h3>
                             <select name="programOption" id="programOption" required>
                                 <option value="" disabled selected>Pilih program</option>
                                 <!-- Opsi program akan dimuat di sini -->
                             </select>
-                        </div><br>
+                        </div>
                         <button type="submit">Daftar Program</button>
                     </form>
                 </div>
@@ -207,8 +218,10 @@
                     <label for="shopAddress">Alamat Toko:</label><br>
                     <textarea type="text" id="shopAddress" name="shopAddress"></textarea><br><br>
 
-                    <button type="button" onclick="saveAccount()">Simpan</button>
-                    <button type="button" onclick="cancelEdit()">Batal</button>
+                    <div class="form-buttons">
+                        <button type="button" onclick="saveAccount()">Simpan</button>
+                        <button type="button" class="btn-danger" onclick="cancelEdit()">Batal</button>
+                    </div>
                 </form>
             </div>
             <div id="changePasswordSection" class="content-section" style="display: none;">
@@ -223,8 +236,10 @@
                     <label for="confirmPassword">Konfirmasi Password Baru:</label><br>
                     <input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
 
-                    <button type="button" onclick="changePassword()">Ganti Password</button>
-                    <button type="button" onclick="cancelEdit2()">Batal</button>
+                    <div class="form-buttons">
+                        <button type="button" onclick="changePassword()">Ganti Password</button>
+                        <button type="button" class="btn-danger" onclick="cancelEdit2()">Batal</button>
+                    </div>
                 </form>
             </div>
         </div>

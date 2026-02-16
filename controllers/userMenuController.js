@@ -355,12 +355,12 @@ async function completeOrder(req, res) {
     try {
         // Validasi status apakah sudah dalam status "Dikirim"
         const [currentStatus] = await db.promise().query('SELECT status_id FROM orders WHERE order_id IN (?)', [orders]);
-        if (currentStatus.some(order => order.status_id !== 4)) {
-            return res.status(400).json({ success: false, message: 'Beberapa pesanan sudah tidak dapat diselesaikan (status bukan "Dikirim").' });
+        if (currentStatus.some(order => order.status_id !== 7)) {
+            return res.status(400).json({ success: false, message: 'Pesanan tidak dapat diselesaikan (status bukan "Terkirim").' });
         }
 
         // Lakukan update status pesanan menjadi "Selesai"
-        await db.promise().query('UPDATE orders SET status_id = 5 WHERE order_id IN (?) AND status_id = 4', [orders]);
+        await db.promise().query('UPDATE orders SET status_id = 5 WHERE order_id IN (?) AND status_id = 7', [orders]);
 
         // 🔥 Tambahkan success: true agar frontend bisa mengenali suksesnya
         res.status(200).json({ success: true, message: 'Pesanan berhasil diselesaikan.' });

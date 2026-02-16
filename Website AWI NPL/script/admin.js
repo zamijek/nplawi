@@ -47,44 +47,76 @@ async function handleLogout() {
 }
 //LOGOUT SELESAI============================
 
-//MENU PEMESANAN
 document.addEventListener('DOMContentLoaded', () => {
-    const ordersTable = document.getElementById('orders-list');
-    const selectAllCheckbox = document.getElementById('select-all');
 
-    // Fetch orders data
-    fetch('/admin/orders') // Sesuaikan dengan endpoint Anda
+    // Langsung tampilkan menu orders saat pertama load
+    showContent('orders');
+
+    loadOrders();
+
+});
+
+//MENU PEMESANAN
+function loadOrders() {
+    const ordersTable = document.getElementById('orders-list');
+    ordersTable.innerHTML = ''; // Reset agar tidak double
+
+    fetch('/admin/orders')
         .then(response => response.json())
         .then(orders => {
+
+            if (orders.length === 0) {
+                ordersTable.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align:center;">
+                            Tidak ada data pesanan.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
             orders.forEach(order => {
                 const row = document.createElement('tr');
                 row.classList.add('order-row');
                 row.innerHTML = `
-                                <td>
-                                    <input type="checkbox" class="order-checkbox" data-order-id="${order.order_id}" />
-                                </td>
-                                <td>${order.order_id}</td>
-                                <td>${order.nama_toko}</td>
-                                <td>${order.quantity_330ml}</td>
-                                <td>${order.quantity_600ml}</td>
-                                <td>${order.quantity_1500ml}</td>
-                                <td>${order.total_quantity}</td>
-                                <td>${new Date(order.order_date).toLocaleString()}</td>
-                                <td class="status-cell">${order.status_name}</td> <!-- Menambahkan kelas status-cell -->
-                            `;
+                    <td>
+                        <input type="checkbox" class="order-checkbox" data-order-id="${order.order_id}" />
+                    </td>
+                    <td>${order.order_id}</td>
+                    <td>${order.nama_toko}</td>
+                    <td>${order.quantity_330ml}</td>
+                    <td>${order.quantity_600ml}</td>
+                    <td>${order.quantity_1500ml}</td>
+                    <td>${order.total_quantity}</td>
+                    <td>${new Date(order.order_date).toLocaleString()}</td>
+                    <td class="status-cell">${order.status_name}</td>
+                `;
                 ordersTable.appendChild(row);
             });
-        })
-        .catch(err => console.error('Failed to fetch orders:', err));
 
-    // Handle "Select All" checkbox
-    selectAllCheckbox.addEventListener('change', () => {
-        const checkboxes = document.querySelectorAll('.order-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = selectAllCheckbox.checked;
+        })
+        .catch(err => {
+            console.error('Failed to fetch orders:', err);
+            ordersTable.innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align:center; color:red;">
+                        Gagal memuat data.
+                    </td>
+                </tr>
+            `;
         });
+}
+
+const selectAllCheckbox = document.getElementById('select-all');
+
+selectAllCheckbox.addEventListener('change', () => {
+    const checkboxes = document.querySelectorAll('.order-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAllCheckbox.checked;
     });
 });
+
 // Ambil semua order_id yang dipilih
 function getSelectedOrders() {
     const selectedCheckboxes = document.querySelectorAll('.order-checkbox:checked');
@@ -159,9 +191,14 @@ function printSelectedInvoices() {
                     if (!confirmPrint) return;
                 }
 
-                // Setelah konfirmasi, cetak ulang invoice
-                window.location.href = `/admin/invoice/${orderId}`; // Ini akan memulai pengunduhan PDF, bukan membuka tab kosong.
-            })
+                // SOLUSI: Download otomatis tanpa pindah halaman
+                const link = document.createElement('a');
+                link.href = `/admin/invoice/${orderId}`;
+                link.download = `Invoice-${orderId}.pdf`; // Memberitahu browser untuk mengunduh
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link); // Ini akan memulai pengunduhan PDF, bukan membuka tab kosong.
+          })
             .catch(err => console.error('Terjadi kesalahan:', err));
     });
 }
@@ -219,7 +256,6 @@ async function updatePrices() {
         }
     }
 }
-
 
 // Event listeners
 document.getElementById('updatePrices').addEventListener('click', updatePrices);
@@ -298,6 +334,16 @@ window.onload = function () {
 };
 
 //monitoring program =================
+function formatRupiah(angka) {
+    if (!angka) return "Rp 0,00";
+
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 2
+    }).format(angka);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const categoryDropdown = document.getElementById('categoryProgram');
     const tableBody = document.querySelector('.promo-monitor-table tbody');
@@ -319,10 +365,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             <td>${program.category}</td>
                             <td>${program.program_name}</td>
                             <td>${program.target_kuartal}</td>
-                            <td>${program.discount || '0%'}</td>
-                            <td>${program.cashback['330ml'] || '-'}</td>
-                            <td>${program.cashback['600ml'] || '-'}</td>
-                            <td>${program.cashback['1500ml'] || '-'}</td>
+                            <td>${formatRupiah(program.discount)}</td>
+                            <td>${program.cashback['330ml'] ? formatRupiah(program.cashback['330ml']) : '-'}</td>
+                            <td>${program.cashback['600ml'] ? formatRupiah(program.cashback['600ml']) : '-'}</td>
+                            <td>${program.cashback['1500ml'] ? formatRupiah(program.cashback['1500ml']) : '-'}</td>
                         </tr>
                     `;
                     tableBody.innerHTML += row;
@@ -624,7 +670,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 document.querySelector('.report-orders').innerHTML = `
-                    <h3>Laporan Penjualan</h3>
                     <p><strong>Total Penjualan :</strong> ${formatIDR.format(data.total_penjualan)}</p>
                     <p><strong>Total Unit Terjual :</strong> ${data.total_unit_terjual} Karton</p>
                     <p><strong>Total 330ml Terjual :</strong> ${data.total_330ml} Karton</p>
@@ -642,9 +687,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tableBody = document.querySelector('#report-best-table tbody');
                 tableBody.innerHTML = ''; // Reset tabel sebelum menambahkan data baru
 
-                data.forEach(shop => {
+                data.forEach((shop, index) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td>${index + 1}</td> <!-- Nomor urut -->
                         <td>${shop.nama_toko}</td>
                         <td>${shop.quantity_330ml}</td>
                         <td>${shop.quantity_600ml}</td>
@@ -655,8 +701,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     tableBody.appendChild(row);
                 });
-            })
-            .catch(err => console.error('Error fetching best shop data:', err));
+              })
+         .catch(err => console.error('Error fetching best shop data:', err));
     });
 });
 

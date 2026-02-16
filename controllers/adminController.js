@@ -1,5 +1,12 @@
 const db = require('../config/db');
 const PDFDocument = require('pdfkit');
+//Logo Invoice
+const multer = require('multer');
+const path = require('path');
+
+const logoPath = path.join(__dirname, '..', 'Website AWI NPL', 'gambar', 'AWI logo.png');
+const backgroundPath = path.join(__dirname, '..', 'Website AWI NPL', 'gambar', 'pcnpl.jpg');
+
 const ExcelJS = require('exceljs');
 require('dotenv').config();
 
@@ -99,45 +106,178 @@ function invoiceOrder(req, res) {
         }
 
         const order = results[0];
+        const tanggalKirim = new Date();
 
-        // Jika invoice sudah dicetak, lanjutkan dengan mencetak ulang
-        const doc = new PDFDocument();
-
-        // Fungsi format Rupiah
         function formatRupiah(value) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(value);
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(value);
         }
 
-        res.setHeader('Content-Disposition', `attachment; filename=invoice_${orderId}.pdf`);
-        res.setHeader('Content-Type', 'application/pdf');
+        function formatTanggal(date) {
+            const d = new Date(date);
+            return d.toLocaleDateString('id-ID');
+        }
 
-        doc.fontSize(22).text(`Invoice Pesanan`, { align: 'center' }).moveDown(1);
-        doc.font('Helvetica').fontSize(14)
-            .text(`Order ID: ${order.order_id}`)
-            .text(`Nama Toko: ${order.nama_toko}`)
-            .text(`Tanggal Pemesanan: ${new Date(order.order_date).toLocaleString()}`)
-            .text(`Wilayah: ${order.wilayah_toko}`)
-            .text(`Alamat: ${order.alamat_pengiriman}`)
-            .text(`Nomor Telepon: ${order.no_telp}`)
-            .moveDown(1)
-            .text(`--- Detail Pesanan ---`)
-            .text(`Nestlé Pure Life 330ml: ${order.quantity_330ml} karton`)
-            .text(`Nestlé Pure Life 600ml: ${order.quantity_600ml} karton`)
-            .text(`Nestlé Pure Life 1500ml: ${order.quantity_1500ml} karton`)
-            .moveDown(1)
-            .text(`Total Jumlah: ${order.total_quantity} karton`)
-            .text(`Total Harga: ${formatRupiah(order.total_amount)}`)
-            .text(`Diskon: ${formatRupiah(order.discount)}`)
-            .text(`Total Bayar: ${formatRupiah(order.final_amount)}`)
-            .moveDown(1)
-            .text(`Nama Sales: ${order.nama_sales}`)
-            .moveDown(2)
-            .font('Helvetica-Bold').text(`Catatan:`, { underline: true })
-            .font('Helvetica').text(order.note || 'Tidak ada catatan.')
-            .moveDown(2)
-            .text(`Terima kasih atas pesanan Anda!`, { align: 'center' });
+        function formatJam(date) {
+            const d = new Date(date);
+            return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
 
+                // Jika invoice sudah dicetak, lanjutkan dengan mencetak ulang
+        const doc = new PDFDocument({ margin: 50 });
         doc.pipe(res);
+
+        // =======================
+        // HEADER
+        // =======================
+
+        // LOGO
+        doc.image(logoPath, 500, 30, { width: 60 });
+
+        // Judul
+        doc.fontSize(22)
+        .font('Helvetica-Bold')
+        .text('INVOICE', 50, 50);
+
+        // Garis pembatas
+        doc.moveTo(50, 90)
+        .lineTo(550, 90)
+        .stroke();
+
+        // =======================
+        // INFORMASI ORDER (KIRI)
+        // =======================
+        let currentY = 110;
+
+        doc.fontSize(12)
+        .font('Helvetica')
+        .text(`Order ID`, 50, currentY)
+        .text(`Nama Toko`, 50, currentY + 20)
+        .text(`Wilayah`, 50, currentY + 40)
+        .text(`Alamat`, 50, currentY + 60)
+        .text(`No. Telp`, 50, currentY + 105)
+        .text(`Nama Sales`, 50, currentY + 125);
+
+        // Value kiri
+        doc.font('Helvetica-Bold')
+        .text(`: ${order.order_id}`, 130, currentY)
+        .text(`: ${order.nama_toko}`, 130, currentY + 20)
+        .text(`: ${order.wilayah_toko}`, 130, currentY + 40)
+        .text(`: ${order.alamat_pengiriman}`, 130, currentY + 60, { width: 200 })
+        .text(`: ${order.no_telp}`, 130, currentY + 105)
+        .text(`: ${order.nama_sales}`, 130, currentY + 125);
+
+        // =======================
+        // TANGGAL (KANAN)
+        // =======================
+        doc.font('Helvetica')
+        .text(`Tanggal Pesan`, 355, currentY)
+        .text(`Jam Pesan`, 355, currentY + 20)
+        .text(`Tanggal Kirim`, 355, currentY + 40)
+        .text(`Jam Kirim`, 355, currentY + 60);
+
+        doc.font('Helvetica-Bold')
+        .text(`: ${formatTanggal(order.order_date)}`, 465, currentY)
+        .text(`: ${formatJam(order.order_date)}`, 465, currentY + 20)
+        .text(`: ${formatTanggal(tanggalKirim)}`, 465, currentY + 40)
+        .text(`: ${formatJam(tanggalKirim)}`, 465, currentY + 60);
+
+        // =======================
+        // GARIS PEMBATAS INFO
+        // =======================
+        let detailStartY = currentY + 145;
+
+        doc.moveTo(50, detailStartY)
+        .lineTo(550, detailStartY)
+        .stroke();
+
+        // =======================
+        // DETAIL PESANAN
+        // =======================
+        detailStartY += 25;
+
+        doc.fontSize(14)
+        .font('Helvetica-Bold')
+        .text('Detail Pesanan', 50, detailStartY);
+
+        detailStartY += 20;
+
+        doc.moveTo(50, detailStartY)
+        .lineTo(550, detailStartY)
+        .stroke();
+
+        detailStartY += 10;
+
+        // Header Table
+        doc.fontSize(12)
+        .font('Helvetica-Bold')
+        .text('Produk', 50, detailStartY)
+        .text('Qty', 400, detailStartY);
+
+        detailStartY += 15;
+
+        doc.moveTo(50, detailStartY)
+        .lineTo(550, detailStartY)
+        .stroke();
+
+        detailStartY += 10;
+
+        // Isi Table
+        doc.font('Helvetica')
+        .text('Nestlé Pure Life 330ml', 50, detailStartY)
+        .text(`${order.quantity_330ml} karton`, 400, detailStartY);
+
+        detailStartY += 20;
+
+        doc.text('Nestlé Pure Life 600ml', 50, detailStartY)
+        .text(`${order.quantity_600ml} karton`, 400, detailStartY);
+
+        detailStartY += 20;
+
+        doc.text('Nestlé Pure Life 1500ml', 50, detailStartY)
+        .text(`${order.quantity_1500ml} karton`, 400, detailStartY);
+
+        detailStartY += 25;
+
+        doc.moveTo(50, detailStartY)
+        .lineTo(550, detailStartY)
+        .stroke();
+
+        // =======================
+        // TOTAL
+        // =======================
+
+        doc.font('Helvetica-Bold')
+        .text(`Total Quantity`, 350, 420)
+        .text(`: ${order.total_quantity} karton`, 470, 420);
+
+        doc.text(`Total Harga`, 350, 440)
+        .text(`: ${formatRupiah(order.total_amount)}`, 470, 440);
+
+        doc.text(`Diskon`, 350, 460)
+        .text(`: ${formatRupiah(order.discount)}`, 470, 460);
+
+        doc.text(`Total Bayar`, 350, 480)
+        .text(`: ${formatRupiah(order.final_amount)}`, 470, 480);
+
+        // =======================
+        // FOOTER
+        // =======================
+
+        doc.moveTo(50, 510)
+        .lineTo(550, 510)
+        .stroke();
+
+        doc.fontSize(10)
+        .font('Helvetica')
+        .text('Terima kasih atas kepercayaan Anda.', 50, 530, {
+            align: 'center',
+            width: 500
+        });
+
         doc.end();
 
         // Update status is_invoice_printed
@@ -174,7 +314,7 @@ async function processOrder(req, res) {
         // Validasi status apakah sudah dalam status "Diproses"
         const [currentStatus] = await db.promise().query('SELECT status_id FROM orders WHERE order_id IN (?)', [orders]);
         if (currentStatus.some(order => order.status_id !== 2)) {
-            return res.status(400).json({ message: 'Beberapa pesanan sudah tidak dapat diproses (status bukan "Menunggu Pembayaran").' });
+            return res.status(400).json({ message: 'Beberapa pesanan sudah tidak dapat diproses.' });
         }
 
         // Lakukan update status pesanan menjadi "Diproses"
@@ -196,7 +336,7 @@ async function shipOrder(req, res) {
         // Validasi status apakah sudah dalam status "Diproses"
         const [currentStatus] = await db.promise().query('SELECT status_id FROM orders WHERE order_id IN (?)', [orders]);
         if (currentStatus.some(order => order.status_id !== 3)) {
-            return res.status(400).json({ message: 'Beberapa pesanan sudah tidak dapat dikirim (status bukan "Diproses").' });
+            return res.status(400).json({ message: 'Beberapa pesanan tidak dapat dikirim (status bukan "Diproses").' });
         }
 
         // Lakukan update status pesanan menjadi "Dikirim"
@@ -207,7 +347,6 @@ async function shipOrder(req, res) {
         res.status(500).json({ message: 'Gagal mengirim pesanan.' });
     }
 }
-
 
 //ambil data produk=========================
 async function priceProduct(req, res) {
@@ -670,7 +809,7 @@ async function topShop(req, res) {
 // EXPORT EXCELL
 async function exportExcell(req, res) {
     try {
-        const { month, year } = req.query;
+        const { month, year, status } = req.query;
 
         let query = `
             SELECT 
@@ -694,9 +833,9 @@ async function exportExcell(req, res) {
 
         const params = [year];
 
-        if (month !== 'all') {
-            query += ` AND MONTH(o.order_date) = ?`;
-            params.push(month);
+        if (status && status !== 'all') {
+            query += ` AND s.status_name = ?`;
+            params.push(status);
         }
 
         query += `
@@ -712,16 +851,29 @@ async function exportExcell(req, res) {
         }
 
         // ================= EXCEL (LANJUTKAN KODE KAMU TANPA DIUBAH) =================
+        const monthNames = [
+            "", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
 
-        // Buat workbook dan worksheet
+        const namaBulan = month === 'all'
+            ? 'Semua Bulan'
+            : monthNames[parseInt(month)];
+
+        const namaStatus = status === 'all'
+            ? 'Semua Status'
+            : status;
+
+       // Buat workbook dan worksheet
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Laporan Penjualan');
+        const worksheet = workbook.addWorksheet('Laporan Penjualan'); // ← WAJIB ADA
 
-        // Tambahkan judul di baris pertama
-        worksheet.mergeCells('A1:K1');
+        const reportTitle = `Laporan Penjualan Nestle Pure Life - ${namaBulan} ${year} - ${namaStatus}`;
+
+        worksheet.mergeCells('A1:K2');
         const titleRow = worksheet.getCell('A1');
-        titleRow.value = `Laporan Penjualan Nestle Pure Life - ${month}/${year}`;
-        titleRow.font = { size: 16, bold: true };
+        titleRow.value = reportTitle;
+        titleRow.font = { size: 18, bold: true };
         titleRow.alignment = { horizontal: 'center', vertical: 'middle' };
 
         // Definisi Header dengan 'Order ID' sebagai kolom pertama
@@ -729,7 +881,14 @@ async function exportExcell(req, res) {
             'Order ID', 'Nama Toko', 'Wilayah Toko', 'Nama Sales', 'Tanggal',
             '330ml', '600ml', '1500ml', 'Total Pesanan', 'Total Harga', 'Status'
         ];
-        const headerRow = worksheet.addRow(headers);
+        const headerRow = worksheet.addRow([]);
+        headerRow.values = headers;
+        headerRow.number = 5;
+
+        // Freeze header agar tidak ikut scroll
+        worksheet.views = [
+            { state: 'frozen', ySplit: 5 }
+        ];
 
         // Styling header (tebal, tengah, warna latar biru)
         headerRow.eachCell((cell) => {
@@ -788,10 +947,15 @@ async function exportExcell(req, res) {
             'Content-Type',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
+        const fileName = reportTitle
+            .replace(/\s+/g, '_')        // spasi jadi _
+            .replace(/[\/\\?%*:|"<>]/g, ''); // hapus karakter ilegal
+
         res.setHeader(
             'Content-Disposition',
-            `attachment; filename=Laporan_Penjualan_NPL_${month}_${year}.xlsx`
+            `attachment; filename=${fileName}.xlsx`
         );
+
 
         // Kirim file Excel sebagai response
         await workbook.xlsx.write(res);
@@ -802,11 +966,231 @@ async function exportExcell(req, res) {
     }
 }
 
+async function getReportData(req, res) {
+    try {
+        const { month, year, status } = req.query;
 
+        let query = `
+            SELECT 
+                o.order_id,
+                o.nama_toko,
+                o.wilayah_toko,
+                o.nama_sales,
+                DATE_FORMAT(o.order_date, '%Y-%m-%d') AS tanggal,
+                SUM(oi.quantity) AS jumlah_pesanan,
+                SUM(oi.total) AS jumlah_harga,
+                s.status_name AS status
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN order_status s ON o.status_id = s.status_id
+            WHERE YEAR(o.order_date) = ?
+        `;
+
+        const params = [year];
+
+        if (month !== 'all') {
+            query += ` AND MONTH(o.order_date) = ?`;
+            params.push(month);
+        }
+
+        if (status !== 'all') {
+            query += ` AND s.status_name = ?`;
+            params.push(status);
+        }
+
+        query += `
+            GROUP BY o.order_id
+            ORDER BY o.order_date ASC
+        `;
+
+        const [data] = await db.promise().query(query, params);
+        res.json(data);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Gagal mengambil data" });
+    }
+}
+
+
+//KURIR//=============================
+async function getDataPengiriman(req, res) {
+    try {
+
+        const query = `
+            SELECT 
+            o.order_id,
+            o.nama_toko,
+            o.no_telp,
+            s.status_name AS status,
+            o.bukti_kirim,
+
+            SUM(CASE WHEN p.ukuran_produk = '330ml' THEN oi.quantity ELSE 0 END) AS ukuran_330ml,
+            SUM(CASE WHEN p.ukuran_produk = '600ml' THEN oi.quantity ELSE 0 END) AS ukuran_600ml,
+            SUM(CASE WHEN p.ukuran_produk = '1500ml' THEN oi.quantity ELSE 0 END) AS ukuran_1500ml
+
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN produk p ON oi.product_id = p.produk_id
+            JOIN order_status s ON o.status_id = s.status_id
+
+            WHERE s.status_name IN ('Dikirim', 'Terkirim')
+
+            GROUP BY o.order_id
+            ORDER BY o.order_date ASC;
+        `;
+     
+        const [data] = await db.promise().query(query);
+
+        res.json(data);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Gagal mengambil data pengiriman"
+        });
+    }
+}
+
+// ======================
+// CONTROLLER (STYLE SAMA SEPERTI KAMU)
+// ======================
+async function uploadBukti(req, res) {
+    try {
+        const { orderId } = req.params;
+
+        if (!req.file) {
+            return res.status(400).json({
+                message: "File tidak ditemukan"
+            });
+        }
+
+        const filePath = '/uploads/bukti_kirim/' + req.file.filename;
+
+        await db.promise().query(
+            `UPDATE orders 
+             SET bukti_kirim = ?, 
+                 tanggal_kirim = NOW(),
+                 status_id = 7 
+             WHERE order_id = ?`,
+            [filePath, orderId]
+        );
+
+        res.json({
+            message: "Bukti kirim berhasil diupload",
+            filePath
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Terjadi kesalahan server"
+        });
+    }
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'hasilUpload/uploads/bukti_kirim/');
+    },
+    filename: function (req, file, cb) {
+        const uniqueName =
+            'order_' +
+            req.params.orderId +
+            '_' +
+            Date.now() +
+            path.extname(file.originalname);
+
+        cb(null, uniqueName);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 2 * 1024 * 1024 },
+    fileFilter: function (req, file, cb) {
+        const allowedTypes = /jpeg|jpg|png/;
+        const ext = allowedTypes.test(
+            path.extname(file.originalname).toLowerCase()
+        );
+
+        if (ext) {
+            cb(null, true);
+        } else {
+            cb(new Error('File harus berupa gambar (jpg/png)'));
+        }
+    }
+});
+
+//Ambil data kurir=============
+async function getProfilKurir(req, res) {
+
+    try {
+
+        const customerId = req.user.customer_id;
+
+        const [rows] = await db.promise().query(
+            `SELECT nama_lengkap, no_telp
+             FROM users
+             WHERE customer_id = ?
+             AND role = 'kurir'`,
+            [customerId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                message: "Data kurir tidak ditemukan"
+            });
+        }
+
+        res.json(rows[0]);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Terjadi kesalahan server"
+        });
+    }
+}
+
+//Ambil statistik kurir=============
+async function getStatistikPengiriman(req, res) {
+    try {
+
+        const [rows] = await db.promise().query(`
+            SELECT 
+                COUNT(CASE 
+                    WHEN DATE(tanggal_kirim) = CURDATE() 
+                    THEN 1 
+                END) AS total_hari_ini,
+
+                COUNT(CASE 
+                    WHEN MONTH(tanggal_kirim) = MONTH(CURDATE())
+                    AND YEAR(tanggal_kirim) = YEAR(CURDATE())
+                    THEN 1 
+                END) AS total_bulan_ini
+
+            FROM orders
+            WHERE bukti_kirim IS NOT NULL
+        `);
+
+        res.json(rows[0]);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: "Terjadi kesalahan server"
+        });
+    }
+}
+
+
+//EXPORT DATA KE ROUTER===============
 module.exports = {
     dataOrder, invoiceOrder, checkInvoice, processOrder, shipOrder,
     priceProduct, priceUpdate, stockProduct, updateStock,
     monitoringProgram, getProgramsByCategory,
     getProgramDetails, updateProgram, dataToko, getWilayah, riwayatTransaksi,
-    salesReport, topShop, exportExcell
+    salesReport, topShop, exportExcell, getReportData,
+    getDataPengiriman, uploadBukti, upload, getProfilKurir, getStatistikPengiriman
 };

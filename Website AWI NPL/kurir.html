@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nestlé Pure Life | Dashboard Kurir</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="style/kurir.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="gambar/AWI logo.png" alt="Nestlé Pure Life">
+            </div>
+            <div class="header-title">
+                <h1>Selamat Datang Team Nestlé Pure Life</h1>
+            </div>
+            <div class="logout">
+                <button onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <a href="#" onclick="showContent('pengiriman')">
+                <i class="fa-solid fa-truck menu-icon"></i>
+                Menu Pengiriman
+            </a>
+
+            <a href="#" onclick="showContent('informasi')">
+                <i class="fa-solid fa-user menu-icon"></i>
+                Informasi Kurir
+            </a>
+        </div>
+
+        <!-- CONTENT AREA -->
+        <div class="content-area">
+
+            <!-- ========================= -->
+            <!-- MENU PENGIRIMAN -->
+            <!-- ========================= -->
+            <div id="pengiriman" class="content-section">
+
+                <h2>Daftar Pesanan Siap Dikirim</h2>
+
+                <table border="1" class="pengiriman-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Order ID</th>
+                            <th rowspan="2">Nama Toko</th>
+                            <th rowspan="2">No Telp</th>
+                            <th colspan="3">Total Pesanan</th>
+                            <th rowspan="2">Status</th>
+                            <th rowspan="2">Bukti Kirim</th>
+                            <th rowspan="2">Aksi</th>
+                        </tr>
+                        <tr>
+                            <th>330ml</th>
+                            <th>600ml</th>
+                            <th>1500ml</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pengirimanBody">
+                        <!-- Data dimuat via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ========================= -->
+            <!-- MENU INFORMASI KURIR -->
+            <!-- ========================= -->
+            <div id="informasi" class="content-section" style="display:none;">
+                <h2>Informasi Kurir</h2>
+                <div class="profile-box">
+                    <p><strong>Nama Kurir:</strong> <span id="namaKurir">Memuat...</span></p>
+                    <p><strong>No Telepon:</strong> <span id="telpKurir">Memuat...</span></p>
+                </div>
+                <h3>Statistik Pengiriman</h3>
+
+                <div class="statistik-box">
+                    <p>Total Dikirim Hari Ini: <span id="todayDelivery">0</span></p> 
+                    <p>Total Dikirim Bulan Ini: <span id="monthDelivery">0</span></p> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Nestlé Pure Life. All rights reserved.</p>
+    </footer>
+
+
+    <script src="script/kurir.js"></script>
+    <script src="script/app.js"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="process.env.CLIENT_KEY"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</body>
+</html>

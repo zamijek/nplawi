@@ -14,6 +14,11 @@ function showContent(sectionId) {
     document.querySelector(`[onclick="showContent('${sectionId}')"]`).classList.add('active');
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    showContent('orders'); // default pertama tampil
+});
+
+
 //LOGOUT===================
 async function handleLogout() {
     const token = localStorage.getItem('token'); // Ambil token dari localStorage
@@ -228,10 +233,10 @@ function completeSelectedOrders() {
 }
 
 
-
 // MANAJEMEN PRODUK
 async function fetchPreviousPrices() {
     const inputs = document.querySelectorAll('input[data-product-id]');
+
     for (const input of inputs) {
         const productId = input.dataset.productId;
         const previousPriceSpan = document.querySelector(`#previousPriceItem${productId}`);
@@ -241,9 +246,17 @@ async function fetchPreviousPrices() {
             if (!response.ok) throw new Error('Gagal memuat harga');
 
             const data = await response.json();
-            previousPriceSpan.textContent = `(Sebelumnya: Rp ${data.harga})`;
+
+            const formattedPrice = new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 2
+            }).format(data.harga);
+
+            previousPriceSpan.textContent = `(Saat ini: ${formattedPrice})`;
+
         } catch (error) {
-            previousPriceSpan.textContent = '(Sebelumnya: Tidak tersedia)';
+            previousPriceSpan.textContent = '(Saat ini: Tidak tersedia)';
             console.error(`Gagal memuat harga untuk produk ID ${productId}:`, error);
         }
     }
@@ -272,7 +285,7 @@ async function updatePrices() {
             const data = await response.json();
             console.log(data.message);
             const previousPriceSpan = document.querySelector(`#previousPriceItem${productId}`);
-            previousPriceSpan.textContent = `(Sebelumnya: Rp ${newPrice})`;
+            previousPriceSpan.textContent = `(Saat ini: Rp ${newPrice})`;
 
             // Tampilkan alert ketika berhasil
             alert(`Harga untuk produk ID ${productId} berhasil diperbarui menjadi Rp ${newPrice}`);
@@ -514,8 +527,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-
-
 //MENU LAPORAN PENJUALAN==================
 // Mengisi dropdown tahun secara dinamis
 const tahunDropdown = document.getElementById('year');
@@ -530,203 +541,56 @@ for (let year = currentYear; year >= currentYear - 2; year--) {
 document.getElementById('exportExcel').addEventListener('click', () => {
     const month = document.getElementById('month').value;
     const year = document.getElementById('year').value;
-    
-    if (!month || !year) {
-        alert('Silakan pilih bulan dan tahun!');
+    const status = document.getElementById('status').value;
+
+    if (!year) {
+        alert('Silakan pilih tahun!');
         return;
     }
 
-    // Buat URL untuk mengunduh file Excel
-    window.location.href = `/admin/export-excel?month=${month}&year=${year}`;
+    window.location.href =
+        `/admin/export-excel?month=${month}&year=${year}&status=${status}`;
 });
 
+// VIEW DATA LAPORAN
+function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 2
+    }).format(angka);
+}
 
-// document.addEventListener('DOMContentLoaded', () => {
-//     // Inisialisasi pilihan tahun secara dinamis
-//     const yearSelect = document.getElementById('year');
-//     const currentYear = new Date().getFullYear();
-//     for (let i = currentYear - 2; i <= currentYear; i++) {
-//         const option = document.createElement('option');
-//         option.value = i;
-//         option.textContent = i;
-//         yearSelect.appendChild(option);
-//     }
+document.getElementById('viewReport').addEventListener('click', async () => {
+    const month = document.getElementById('month').value;
+    const year = document.getElementById('year').value;
+    const status = document.getElementById('status').value;
 
-//     // Event handler untuk tombol filter
-//     document.getElementById('filter-button').addEventListener('click', () => {
-//         const month = document.getElementById('month').value;
-//         const year = document.getElementById('year').value;
+    if (!year) {
+        alert("Pilih tahun terlebih dahulu!");
+        return;
+    }
 
-//         // Fetch laporan penjualan
-//         fetch(`/admin/sales-report?month=${month}&year=${year}`)
-//             .then(response => response.json())
-//             .then(data => {
-//                 const formatIDR = new Intl.NumberFormat('id-ID', {
-//                     style: 'currency',
-//                     currency: 'IDR',
-//                 });
+    const response = await fetch(`/admin/get-report?month=${month}&year=${year}&status=${status}`);
+    const data = await response.json();
 
-//                 document.querySelector('.report-orders').innerHTML = `
-//                     <h3>Laporan Penjualan</h3>
-//                     <p><strong>Total Penjualan :</strong> ${formatIDR.format(data.total_penjualan)}</p>
-//                     <p><strong>Total Unit Terjual :</strong> ${data.total_unit_terjual} Karton</p>
-//                     <p><strong>Total 330ml Terjual :</strong> ${data.total_330ml} Karton</p>
-//                     <p><strong>Total 600ml Terjual :</strong> ${data.total_600ml} Karton</p>
-//                     <p><strong>Total 1500ml Terjual :</strong> ${data.total_1500ml} Karton</p>
-//                     <p><strong>Jumlah Transaksi :</strong> ${data.total_transaksi}</p>
-//                 `;
-//             })
-//             .catch(err => console.error('Failed to fetch sales report:', err));
+    const tbody = document.getElementById('reportBody');
+    tbody.innerHTML = "";
 
-//         // Fetch toko terbaik
-//         fetch(`/admin/top-shops?month=${month}&year=${year}`)
-//             .then(response => response.json())
-//             .then(data => {
-//                 const tableBody = document.querySelector('#report-best-table tbody');
-//                 tableBody.innerHTML = ''; // Reset tabel sebelum menambahkan data baru
+    data.forEach(item => {
+        const row = `
+            <tr>
+                <td>${item.order_id}</td>
+                <td>${item.nama_toko}</td>
+                <td>${item.wilayah_toko}</td>
+                <td>${item.nama_sales}</td>
+                <td>${item.tanggal}</td>
+                <td>${item.jumlah_pesanan}</td>
+                <td>${formatRupiah(item.jumlah_harga)}</td>
+                <td>${item.status}</td>
+            </tr>
+        `;
+        tbody.innerHTML += row;
+    });
+});
 
-//                 data.forEach(shop => {
-//                     const row = document.createElement('tr');
-//                     row.innerHTML = `
-//                         <td>${shop.nama_toko}</td>
-//                         <td>${shop.quantity_330ml}</td>
-//                         <td>${shop.quantity_600ml}</td>
-//                         <td>${shop.quantity_1500ml}</td>
-//                         <td>${shop.total_quantity}</td>
-//                         <td>${shop.nama_sales}</td>
-//                         <td>${shop.wilayah_toko}</td>
-//                     `;
-//                     tableBody.appendChild(row);
-//                 });
-//             })
-//             .catch(err => console.error('Error fetching best shop data:', err));
-//     });
-// });
-
-// //DATA TOKO PER WILAYAH===========================
-// document.getElementById('areaToko').addEventListener('change', async (event) => {
-//     const wilayah = event.target.value;
-
-//     try {
-//         // Panggil API untuk mendapatkan data toko
-//         const response = await fetch(`/admin/data-toko/${wilayah}`);
-//         const result = await response.json();
-
-//         if (result.success) {
-//             // Perbarui nama sales
-//             const salesName = document.getElementById('salesName');
-//             salesName.textContent = result.sales || 'Nama Sales tidak ditemukan';
-
-//             // Tampilkan data toko di tabel
-//             const tableBody = document.getElementById('tokoTableBody');
-//             tableBody.innerHTML = '';  // Kosongkan tabel sebelumnya sebelum menambah data baru
-
-//             result.toko.forEach((toko) => {
-//                 const row = document.createElement('tr');
-//                 row.dataset.customerId = toko.customer_id; // Tambahkan data attribute
-//                 row.innerHTML = `
-//                     <td>${toko.nama_toko}</td>
-//                     <td>${toko.alamat_toko}</td>
-//                     <td>${toko.no_telp}</td>
-//                     <td>${toko.jenis_toko}</td>
-//                     <td>${toko.kategori_program || '-'}</td>
-//                     <td>${toko.program || '-'}</td>
-//                     <td>${toko.target || '-'}</td>
-//                 `;
-//                 tableBody.appendChild(row);
-//             });
-//         }
-//     } catch (error) {
-//         console.error('Gagal mengambil data:', error);
-//     }
-// });
-
-// // RIWAYAT TRANSAKSI TOKO
-// // Mengisi dropdown tahun secara dinamis
-// const tahunDropdown = document.getElementById('filterTahun');
-// const currentYear = new Date().getFullYear();
-// for (let year = currentYear; year >= currentYear - 3; year--) {
-//     const option = document.createElement('option');
-//     option.value = year;
-//     option.textContent = year;
-//     tahunDropdown.appendChild(option);
-// }
-
-// // Mengisi dropdown wilayah secara dinamis
-// async function loadWilayahOptions() {
-//     const wilayahDropdown = document.getElementById('filterWilayah');
-//     wilayahDropdown.innerHTML = '<option value="">Semua Wilayah</option>'; // Opsi default
-
-//     try {
-//         const response = await fetch('/admin/wilayah'); // Endpoint untuk mendapatkan data wilayah
-//         const result = await response.json();
-
-//         if (result.success) {
-//             result.data.forEach((wilayah) => {
-//                 const option = document.createElement('option');
-//                 option.value = wilayah.wilayah_toko; // Pastikan nama field sesuai dengan response dari backend
-//                 option.textContent = wilayah.wilayah_toko;
-//                 wilayahDropdown.appendChild(option);
-//             });
-//         } else {
-//             console.error('Gagal memuat daftar wilayah:', result.message);
-//         }
-//     } catch (error) {
-//         console.error('Error fetching wilayah data:', error);
-//     }
-// }
-
-// // Panggil fungsi untuk memuat opsi wilayah
-// loadWilayahOptions();
-
-// // Event listener untuk tombol filter
-// document.getElementById('filterButton').addEventListener('click', async () => {
-//     const bulan = document.getElementById('filterBulan').value;
-//     const tahun = document.getElementById('filterTahun').value;
-//     const namaToko = document.getElementById('filterNamaToko').value.trim();
-//     const wilayah = document.getElementById('filterWilayah').value; // Ambil nilai wilayah
-
-//     if (!bulan || !tahun) {
-//         alert('Silakan pilih bulan dan tahun!');
-//         return;
-//     }
-
-//     try {
-//         // Tambahkan wilayah hanya jika ada nilai
-//         const url = new URL('/admin/riwayat-penjualan', window.location.origin);
-//         url.searchParams.append('bulan', bulan);
-//         url.searchParams.append('tahun', tahun);
-//         if (namaToko) url.searchParams.append('namaToko', namaToko);
-//         if (wilayah) url.searchParams.append('wilayah', wilayah);
-
-//         const response = await fetch(url);
-//         const result = await response.json();
-
-//         if (result.success) {
-//             // Kosongkan tabel sebelumnya
-//             const tbody = document.querySelector('#riwayatTableBody');
-//             tbody.innerHTML = '';
-
-//             // Tambahkan data baru ke tabel
-//             result.data.forEach((item) => {
-//                 const row = document.createElement('tr');
-//                 row.innerHTML = `
-//                     <td>${item.nama_toko || '-'}</td>
-//                     <td>${item.tanggal || '-'}</td>
-//                     <td>${item.ukuran_330ml || '-'}</td>
-//                     <td>${item.ukuran_600ml || '-'}</td>
-//                     <td>${item.ukuran_1500ml || '-'}</td>
-//                     <td>${item.jumlah_pesanan || '-'}</td>
-//                     <td>${item.jumlah_harga ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(item.jumlah_harga) : '-'}</td>
-//                     <td>${item.status || '-'}</td>
-//                 `;
-//                 tbody.appendChild(row);
-//             });
-//         } else {
-//             alert('Data tidak ditemukan!');
-//         }
-//     } catch (error) {
-//         console.error('Error fetching data:', error);
-//         alert('Terjadi kesalahan saat mengambil data!');
-//     }
-// });

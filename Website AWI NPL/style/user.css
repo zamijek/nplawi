@@ -1,0 +1,568 @@
+/* ============================= */
+/* CONTENT SECTION CONTROL */
+/* ============================= */
+
+.content-section {
+    display: none;
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* ============================= */
+/* GLOBAL PROFESSIONAL STYLE */
+/* ============================= */
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    background-color: #f4f6f9;   /* soft grey dashboard */
+    color: #1a1a1a;              /* hitam profesional */
+}
+
+.image-container {
+    margin-bottom: 20px;
+}
+
+.image-container img {
+    width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.content-section {
+    display: none;
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+#editAccountForm,
+#changePasswordForm{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.dashboard-ukurannpl {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+}
+
+/* Gambar lebih kecil & rapi */
+.dashboard-produk img {
+    width: 170px;
+    height: 170px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* Nama produk */
+.product-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Harga */
+.harga-produk p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0071b2;
+    margin: 5px 0;
+}
+
+/* Input jumlah */
+.harga-produk input {
+    width: 70px;
+    padding: 6px;
+}
+
+.cart-section {
+    margin-top: 25px;
+    padding: 20px;
+    background-color: #f9fbfd;
+    border-radius: 10px;
+}
+
+.cart-section h3 {
+    margin-top: 0;
+}
+
+.cart-button {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.riwayat-Pemesanan {
+    margin-top: 25px;
+}
+
+.dashboard-menu a.active {
+    background-color: #0071b2;
+    color: white;
+}
+
+/* Link seperti tombol */
+#promo a {
+    text-decoration: none;
+    color: #0071b2;
+    font-weight: 600;
+}
+
+#promo a:visited {
+    color: #0071b2; /* supaya tidak jadi ungu */
+}
+
+#programSelectionForm {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap; /* supaya tetap responsif kalau layar kecil */
+}
+
+/* Supaya h3 tidak turun ke bawah */
+#programSelectionForm .form-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Hilangkan margin bawaan h3 */
+#programSelectionForm h3 {
+    margin: 0;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+/* Ukuran dropdown */
+#programSelectionForm select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* Tombol agar tidak panjang */
+#programSelectionForm button {
+    width: auto;
+    padding: 8px 18px;
+}
+
+
+#showProgramSelection:hover {
+    background-color: #005a8d;
+}
+
+.program-options {
+    margin-top: 20px;
+}
+
+
+#programSelectionForm button {
+    width: auto;
+    align-self: flex-start;
+    padding: 8px 18px;
+}
+
+/* ============================= */
+/* NAVBAR */
+/* ============================= */
+
+.navbar {
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0071b2;
+    padding: 0 20px;
+}
+
+.header-welcome h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+}
+.logo img {
+    height: 50px;     /* sebelumnya 60px */
+    width: auto;
+    padding-top: 5px;
+}
+
+/* ============================= */
+/* DASHBOARD LAYOUT */
+/* ============================= */
+
+.dashboard-container {
+    display: flex;
+    flex: 1;
+}
+
+/* Sidebar */
+
+.dashboard-menu {
+    width: 220px;
+    background-color: #ffffff;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+        display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-icon {
+    font-size: 14px;
+    width: 18px;
+    text-align: center;
+}
+
+.dashboard-menu a:hover {
+    background-color: #0071b2;
+    color: white;
+}
+
+/* Content Area */
+
+.dashboard-content {
+    flex: 1;
+    padding: 30px;
+}
+
+/* ============================= */
+/* CARD STYLE */
+/* ============================= */
+
+.component,
+.componentToko,
+.orders-container,
+.stock-report-container,
+.update-stock-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+}
+
+/* ============================= */
+/* TABLE STYLE */
+/* ============================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    margin-top: 15px;
+    font-size: 13px; /* Lebih kecil agar compact */
+}
+
+th, td {
+    padding: 6px 8px; /* Lebih kecil dari 10px */
+    border: 1px solid #bfc6cc; /* Border lebih jelas */
+    text-align: center;
+}
+
+th {
+    background-color: #0071b2;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #eef5ff;
+}
+
+.price-setting {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    gap: 6px;
+}
+
+
+/* ============================= */
+/* FORM STYLE */
+/* ============================= */
+
+input, select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #0071b2;
+}
+
+.update-stock-container label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 5px;
+}
+
+.update-stock-container button {
+    margin-top: 15px;
+}
+
+/* ============================= */
+/* BUTTON STYLE */
+/* ============================= */
+#updatePrices {
+    margin-top: 20px;
+    align-self: flex-start;
+}
+
+#editAccountForm button,
+#changePasswordForm button {
+    width: auto;
+    display: inline-block;
+    padding: 8px 18px;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #b02a37;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.form-buttons button {
+    width: auto;
+}
+
+button {
+    background-color: #011d2d;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background-color: #005a8d;
+}
+
+.bulk-actions {
+    margin-top: 10px;
+}
+
+.bulk-actions button {
+    margin-right: 10px;
+}
+
+/* ============================= */
+/* FOOTER */
+/* ============================= */
+footer {
+    background-color: #0071b2;
+    color: white;
+    text-align: center;
+    padding: 8px;        /* sebelumnya 12px */
+    font-size: 13px;     /* lebih kecil & profesional */
+    height: 35px;
+}
+
+
+@media (max-width: 992px) {
+
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .dashboard-menu {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px;
+    }
+
+    .dashboard-menu a {
+        font-size: 14px;
+        padding: 8px 10px;
+        margin: 0;
+    }
+
+    .dashboard-content {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .component table,
+    .stock-report-table {
+        width: 100%;
+    }
+
+    .price-setting input,
+    .update-stock-container input,
+    .update-stock-container select {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    #filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    #filters select,
+    #filters button {
+        width: auto;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .logo img {
+        width: 45px;
+        margin-bottom: 5px;
+    }
+
+    .header-welcome h1 {
+        font-size: 14px;
+    }
+
+    .dashboard-menu {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dashboard-menu a {
+        width: 90%;
+        text-align: center;
+    }
+
+    .component,
+    .componentToko,
+    .orders-container {
+        padding: 15px;
+    }
+
+    .price-setting {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .price-setting input {
+        width: 100%;
+    }
+
+    .update-stock-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .update-stock-container select,
+    .update-stock-container input,
+    .update-stock-container button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    #filters {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #filters select,
+    #filters button {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+
+    body {
+        font-size: 14px;
+    }
+
+    .dashboard-content {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 16px;
+    }
+
+    table th,
+    table td {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .bulk-actions button {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    footer {
+        font-size: 11px;
+        padding: 6px;
+    }
+}

@@ -56,15 +56,14 @@ const schedule = require('node-schedule');
 
 //UNTUK TEST PESANAN SELESAI OTOMATIS DALAM 1 MENIT
 // Scheduler: Jalan setiap menit untuk testing
-schedule.scheduleJob('*/1 * * * *', async () => {
-    console.log('🔄 Menjalankan validasi otomatis pesanan (TEST MODE)...');
+schedule.scheduleJob('*/5 * * * *', async () => {
 
     try {
         const query = `
             SELECT order_id, status_id 
             FROM orders 
-            WHERE status_id IN (1, 4) 
-            AND TIMESTAMPDIFF(MINUTE, order_date, NOW()) >= 1
+            WHERE status_id IN (1, 7) 
+            AND TIMESTAMPDIFF(MINUTE, order_date, NOW()) >= 5
         `;
         const [orders] = await db.promise().query(query);
 
@@ -75,7 +74,7 @@ schedule.scheduleJob('*/1 * * * *', async () => {
             orders.forEach(order => {
                 if (order.status_id === 1) {
                     cancelOrders.push(order.order_id);
-                } else if (order.status_id === 4) {
+                } else if (order.status_id === 7) {
                     completeOrders.push(order.order_id);
                 }
             });
@@ -90,7 +89,7 @@ schedule.scheduleJob('*/1 * * * *', async () => {
                 console.log(`✅ Pesanan diselesaikan (order_id): ${completeOrders.join(', ')}`);
             }
         } else {
-            console.log('✅ Tidak ada pesanan yang perlu diperbarui.');
+            console.log('✅ Tidak ada pesanan yang otomatis diselesaikan.');
         }
     } catch (error) {
         console.error('🔥 Error dalam validasi otomatis:', error);

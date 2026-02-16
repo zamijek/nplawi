@@ -34,4 +34,5 @@ router.get('/getAccount/:userId', getAccountData);
 router.put('/updateAccount/:userId', updateAccountData);
 
 
+
 module.exports = router;

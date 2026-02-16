@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const { verifyToken } = require('../middleware/authMiddleware');
 const { dataOrder, invoiceOrder, processOrder, shipOrder,
     priceProduct, priceUpdate, stockProduct, updateStock,
     monitoringProgram, getProgramsByCategory, getProgramDetails, updateProgram,
@@ -8,7 +9,8 @@ const { dataOrder, invoiceOrder, processOrder, shipOrder,
     salesReport,
     topShop, 
     checkInvoice,
-    getWilayah, exportExcell} = require('../controllers/adminController');
+    getWilayah, exportExcell, getReportData,
+    getDataPengiriman, uploadBukti, upload, getProfilKurir, getStatistikPengiriman} = require('../controllers/adminController');
 
 //manajemen pemesanan
 router.get('/orders', dataOrder);
@@ -38,6 +40,13 @@ router.get('/riwayat-penjualan', riwayatTransaksi);
 router.get('/sales-report', salesReport);
 router.get('/top-shops', topShop);
 router.get('/export-excel', exportExcell);
+router.get('/get-report', getReportData);
+
+//manajemen pengiriman
+router.get('/pengiriman', getDataPengiriman);
+router.post('/upload-bukti/:orderId',upload.single('bukti'),uploadBukti);
+router.get('/profil-kurir', verifyToken, getProfilKurir);
+router.get('/statistik-pengiriman', verifyToken, getStatistikPengiriman);
 
 
 module.exports = router;
