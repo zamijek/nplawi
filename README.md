@@ -87,32 +87,73 @@ Relasi utama:
 
 ---
 
-## 🔐 Login System
+## 📷 Tampilan Sistem
 
-Sistem memiliki beberapa role pengguna dengan akses yang berbeda.
+### 🏠 Homepage
 
-### 👤 Login User
-![Login User](screenshots/login-user.png)
+#### Halaman Home
+![Home](screenshots/home.png)
 
-User dapat melakukan login untuk melihat produk dan melakukan pemesanan.
+#### Halaman Login
+![Login](screenshots/login.png)
 
----
-
-### 🛠 Login Admin
-![Login Admin](screenshots/login-admin.png)
-
-Admin memiliki akses untuk mengelola produk, memproses pesanan, dan mengubah status pesanan.
+#### Halaman Produk
+![Product](screenshots/product.png)
 
 ---
 
-### 🏢 Login Kepala Cabang
-![Login Kepala Cabang](screenshots/login-kepala-cabang.png)
+## 👤 Tampilan Pelanggan
 
-Kepala cabang memiliki akses untuk memantau laporan pesanan dan aktivitas operasional.
+#### Dashboard Pelanggan
+![Pelanggan 1](screenshots/pelanggan1.png)
+
+#### Halaman Pemesanan
+![Pelanggan 2](screenshots/pelanggan2.png)
+
+#### Detail Pesanan
+![Pelanggan 3](screenshots/pelanggan3.png)
+
+#### Status Pesanan
+![Pelanggan 4](screenshots/pelanggan4.png)
 
 ---
 
-### 🚚 Login Kurir
-![Login Kurir](screenshots/login-kurir.png)
+## 🛠 Tampilan Admin
 
-Kurir dapat melihat daftar pesanan yang harus dikirim serta memperbarui status pengiriman.
+#### Dashboard Admin
+![Admin 1](screenshots/admin1.png)
+
+#### Manajemen Produk
+![Admin 2](screenshots/admin2.png)
+
+#### Manajemen Pesanan
+![Admin 3](screenshots/admin3.png)
+
+#### Cetak Invoice
+![Admin 4](screenshots/admin4.png)
+
+---
+
+## 🏢 Tampilan Kepala Cabang
+
+#### Monitoring Pesanan
+![Kepala Cabang 1](screenshots/kepalacabang1.png)
+
+#### Laporan Pesanan
+![Kepala Cabang 2](screenshots/kepalacabang2.png)
+
+#### Detail Data Pesanan
+![Kepala Cabang 3](screenshots/kepalacabang3.png)
+
+#### Statistik Pesanan
+![Kepala Cabang 4](screenshots/kepalacabang4.png)
+
+---
+
+## 🚚 Tampilan Kurir
+
+#### Daftar Pengiriman
+![Kurir 1](screenshots/kurir1.png)
+
+#### Informasi Kurir
+![Kurir 2](screenshots/kurir2.png)
