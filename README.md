@@ -90,6 +90,7 @@ Relasi utama:
 ## 📷 Tampilan Sistem
 
 ### 🏠 Homepage
+Halaman awal sistem yang dapat diakses oleh pengguna sebelum melakukan login. Pengguna dapat melihat informasi produk dan melakukan autentikasi ke dalam sistem.
 
 #### Halaman Home
 ![Home](screenshots/home.png)
@@ -103,6 +104,7 @@ Relasi utama:
 ---
 
 ## 👤 Tampilan Pelanggan
+Role pelanggan digunakan untuk melakukan pemesanan produk dan memantau status pesanan yang telah dibuat.
 
 #### Dashboard Pelanggan
 ![Pelanggan 1](screenshots/pelanggan1.png)
@@ -119,6 +121,7 @@ Relasi utama:
 ---
 
 ## 🛠 Tampilan Admin
+Admin bertanggung jawab untuk mengelola data pesanan, memonitor program penjualan, serta membuat laporan transaksi.
 
 #### Manajemen Pesanan
 ![Admin 1](screenshots/admin1.png)
@@ -138,22 +141,24 @@ Relasi utama:
 ---
 
 ## 🏢 Tampilan Kepala Cabang
+Kepala cabang memiliki akses untuk memantau operasional penjualan, mengatur harga produk, serta mengelola stok barang pada sistem.
 
 #### Monitoring Pesanan
 ![Kepala Cabang 1](screenshots/kepalacabang1.png)
 
-#### Laporan Pesanan
+#### Manajemen Harga Produk
 ![Kepala Cabang 2](screenshots/kepalacabang2.png)
 
-#### Detail Data Pesanan
+#### Manajemen Stok
 ![Kepala Cabang 3](screenshots/kepalacabang3.png)
 
-#### Statistik Pesanan
+#### Laporan Penjualan
 ![Kepala Cabang 4](screenshots/kepalacabang4.png)
 
 ---
 
 ## 🚚 Tampilan Kurir
+Kurir menggunakan sistem untuk melihat daftar pengiriman dan informasi pengantaran pesanan kepada pelanggan.
 
 #### Daftar Pengiriman
 ![Kurir 1](screenshots/kurir1.png)
