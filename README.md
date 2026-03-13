@@ -120,17 +120,20 @@ Relasi utama:
 
 ## 🛠 Tampilan Admin
 
-#### Dashboard Admin
+#### Manajemen Pesanan
 ![Admin 1](screenshots/admin1.png)
 
-#### Manajemen Produk
+#### Monitoring Program
 ![Admin 2](screenshots/admin2.png)
 
-#### Manajemen Pesanan
+#### Manajemen Toko
 ![Admin 3](screenshots/admin3.png)
 
-#### Cetak Invoice
+#### Laporan Penjualan
 ![Admin 4](screenshots/admin4.png)
+
+#### Cetak Invoice
+![Admin 5](screenshots/invoice.png)
 
 ---
 
