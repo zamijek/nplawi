@@ -1,4 +1,4 @@
-# NPLAWI - Sistem Informasi Manajemen Pemesanan
+# NPLAWI - Sistem Informasi Pemesanan Air Mineral Nestle Purelife
 
 ## 📌 Deskripsi Project
 NPLAWI merupakan sistem informasi berbasis web yang dirancang untuk membantu proses manajemen pemesanan produk secara terstruktur mulai dari pemesanan oleh pelanggan hingga pengelolaan pesanan oleh admin.
@@ -58,6 +58,18 @@ Fitur yang tersedia:
 - Mengubah status pesanan
 - Mencetak invoice pesanan
 
+### 3️⃣ Kepala Cabang
+Fitur yang tersedia:
+- Monitoring pesanan dari seluruh toko
+- Mengelola harga produk
+- Mengelola stok produk
+- Melihat laporan penjualan
+
+### 4️⃣ Kurir
+Fitur yang tersedia:
+- Melihat daftar pengiriman
+- Melihat detail pesanan yang harus dikirim
+- Mengakses informasi pengiriman
 ---
 
 ## 🔄 Alur Sistem
@@ -121,7 +133,7 @@ Role pelanggan digunakan untuk melakukan pemesanan produk dan memantau status pe
 ---
 
 ## 🛠 Tampilan Admin
-Admin bertanggung jawab untuk mengelola data pesanan, memonitor program penjualan, serta membuat laporan transaksi.
+Admin bertanggung jawab untuk mengelola data pesanan, memonitor program penjualan, serta melihat laporan transaksi.
 
 #### Manajemen Pesanan
 ![Admin 1](screenshots/admin1.png)
