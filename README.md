@@ -87,12 +87,32 @@ Relasi utama:
 
 ---
 
-## 📷 Tampilan Sistem
-Tambahkan screenshot di sini jika ada:
+## 🔐 Login System
 
-- Halaman produk
-- Halaman pemesanan
-- Dashboard admin
-- Manajemen pesanan
+Sistem memiliki beberapa role pengguna dengan akses yang berbeda.
+
+### 👤 Login User
+![Login User](screenshots/login-user.png)
+
+User dapat melakukan login untuk melihat produk dan melakukan pemesanan.
 
 ---
+
+### 🛠 Login Admin
+![Login Admin](screenshots/login-admin.png)
+
+Admin memiliki akses untuk mengelola produk, memproses pesanan, dan mengubah status pesanan.
+
+---
+
+### 🏢 Login Kepala Cabang
+![Login Kepala Cabang](screenshots/login-kepala-cabang.png)
+
+Kepala cabang memiliki akses untuk memantau laporan pesanan dan aktivitas operasional.
+
+---
+
+### 🚚 Login Kurir
+![Login Kurir](screenshots/login-kurir.png)
+
+Kurir dapat melihat daftar pesanan yang harus dikirim serta memperbarui status pengiriman.
